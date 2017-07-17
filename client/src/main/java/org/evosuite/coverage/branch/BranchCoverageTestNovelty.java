@@ -89,7 +89,7 @@ public class BranchCoverageTestNovelty extends TestNoveltyFunction {
 		ControlFlowDistance distance = goal.getDistance(result);
 
 		
-	//test for git
+	//test for git git
 		double novelty = distance.getResultingBranchFitness();
 
 		if(logger.isDebugEnabled()) {
