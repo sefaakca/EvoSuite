@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.0" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="org.evosuite.coverage.NoveltyFunctions" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/NoveltyFunctions.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="72" width="325" x="582" y="-4"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="2" language="java" name="org.evosuite.coverage.TestNoveltyFactory" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/TestNoveltyFactory.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="751" y="388"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="3" language="java" name="org.evosuite.coverage.NoveltyMetricFactory" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/NoveltyMetricFactory.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="130" y="53"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="4" language="java" name="org.evosuite.coverage.branch.BranchCoverageFactoryNovelty" 
+    project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/branch/BranchCoverageFactoryNovelty.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="154" width="347" x="591" y="108"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="org.evosuite.coverage.branch.BranchCoverageSuiteNovelty" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/branch/BranchCoverageSuiteNovelty.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="89" width="330" x="249" y="5"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="org.evosuite.coverage.branch.BranchCoverageTestNovelty" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/coverage/branch/BranchCoverageTestNovelty.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="90" width="190" x="-205" y="-2"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="org.evosuite.ga.Chromosome" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/ga/Chromosome.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="178" width="129" x="-193" y="128"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="org.evosuite.ga.NoveltyFunction" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/ga/NoveltyFunction.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="143" width="189" x="-13" y="119"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="org.evosuite.ga.metaheuristics.NoveltySearch" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/ga/metaheuristics/NoveltySearch.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="196" width="239" x="-142" y="320"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="org.evosuite.ga.metaheuristics.GeneticAlgorithm" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/ga/metaheuristics/GeneticAlgorithm.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="139" width="145" x="167" y="327"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="org.evosuite.testsuite.TestSuiteNoveltyFunction" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/testsuite/TestSuiteNoveltyFunction.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="133" width="323" x="222" y="144"/>    
+    <display autosize="false" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="org.evosuite.testsuite.AbstractNoveltyFactory" project="evosuite-client" 
+    file="/evosuite-client/src/main/java/org/evosuite/testsuite/AbstractNoveltyFactory.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="499" y="402"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <generalization id="13">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <generalization id="14">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="10"/>  
+  </generalization>  
+  <realization id="15">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <generalization id="16">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="11"/>  
+  </generalization>  
+  <association id="17">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="18" name="population"/>      
+      <multiplicity id="19" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="20">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="21" name="noveltyFunctions"/>      
+      <multiplicity id="22" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="23">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="8"/>  
+  </generalization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

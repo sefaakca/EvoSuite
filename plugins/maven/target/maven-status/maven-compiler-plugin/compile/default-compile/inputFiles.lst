@@ -1,0 +1,11 @@
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/util/ProjectUtils.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/util/FileUtils.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/CleanMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/PrepareMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/CoverageMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/util/HistoryChanges.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/ExportMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/util/EvoSuiteRunner.java
+/home/sefa/evosuite/plugins/maven/target/generated-sources/plugin/HelpMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/InfoMojo.java
+/home/sefa/evosuite/plugins/maven/src/main/java/org/evosuite/maven/GenerateMojo.java
