@@ -387,6 +387,14 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 			return i;
 	}
 	
+	public int compareToNovelty(Chromosome c){
+		int i = (int) Math.signum(this.getNovelty() - c.getNovelty());
+		if (i == 0){
+			return compareSecondaryObjective(c);
+		}else
+			return i;
+	}
+	
 	/**
 	 * Secondary Objectives are specific to chromosome types
 	 * 
@@ -596,7 +604,7 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 		return coverageValues.containsKey(ff) ? coverageValues.get(ff) : 0.0;
 	}
 	
-	public double getCoverage(NoveltyFunction <?> nf){
+	public double getCoverageNovelty(NoveltyFunction <?> nf){
 		return coverageValuesNovelty.containsKey(nf) ? coverageValuesNovelty.get(nf) : 0.0;
 	}
 

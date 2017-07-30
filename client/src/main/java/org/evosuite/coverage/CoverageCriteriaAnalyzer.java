@@ -32,6 +32,7 @@ import org.evosuite.statistics.RuntimeVariable;
 import org.evosuite.testcase.DefaultTestCase;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
+import org.evosuite.testcase.TestNoveltyFunction;
 import org.evosuite.testcase.execution.ExecutionTracer;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.utils.ArrayUtil;
@@ -213,8 +214,8 @@ public class CoverageCriteriaAnalyzer {
 
         TestSuiteChromosome testSuiteCopy = testSuite.clone();
 
+        
         TestFitnessFactory factory = FitnessFunctions.getFitnessFactory(criterion);
-
         if(recalculate) {
             reinstrument(testSuiteCopy, criterion);
 
@@ -231,6 +232,9 @@ public class CoverageCriteriaAnalyzer {
             }
         }
 
+      
+        
+        
         List<TestFitnessFunction> goals = factory.getCoverageGoals();
         Collections.sort(goals);
 
@@ -249,6 +253,7 @@ public class CoverageCriteriaAnalyzer {
                     LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal.toString());
             }
         }
+      
 
         coverageBitString.put(criterion.name(), buffer);
         ClientServices.getInstance().getClientNode().trackOutputVariable(RuntimeVariable.CoverageBitString,

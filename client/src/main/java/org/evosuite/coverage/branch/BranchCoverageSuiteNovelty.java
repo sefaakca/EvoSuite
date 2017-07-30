@@ -214,7 +214,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		else 
             suite.setCoverageNovelty(this, 1);
 		
-		totalCovered = suite.getCoverage(this);
+		totalCovered = suite.getCoverageNovelty(this);
 
 		suite.setNumOfCoveredGoals(this, coverage);
 		suite.setNumOfNotCoveredGoals(this, totalGoals-coverage);
@@ -233,8 +233,8 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		assert (novelty >= 0.0);
 		//assert (novelty != 0.0 || coverage == totalGoals) : "Novelty: " + novelty + ", "
 		 //       + "coverage: " + coverage + "/" + totalGoals;
-		assert (suite.getCoverage(this) <= 1.0) && (suite.getCoverage(this) >= 0.0) : "Wrong coverage value "
-		        + suite.getCoverage(this); 
+		assert (suite.getCoverageNovelty(this) <= 1.0) && (suite.getCoverageNovelty(this) >= 0.0) : "Wrong coverage value "
+		        + suite.getCoverageNovelty(this); 
 		return novelty;
 	}
 	private void handleConstructorExceptions(AbstractTestSuiteChromosome<? extends ExecutableChromosome> suite, List<ExecutionResult> results,
@@ -466,7 +466,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 						df = falseDistance.get(key);
 					}
 					
-					if (falseDistance.containsKey(key)&&(Double.compare(dt, 0.0) == 0))
+					if (falseDistance.containsKey(key)&&(Double.compare(df, 0.0) == 0))
 						numCoveredBranches++;
 
 					if (trueDistance.containsKey(key)&&(Double.compare(dt, 0.0) == 0))
@@ -499,7 +499,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 				else 
 		            suite.setCoverageNovelty(this, 1);
 				
-				totalCovered = suite.getCoverage(this);
+				totalCovered = suite.getCoverageNovelty(this);
 
 				suite.setNumOfCoveredGoals(this, coverage);
 				suite.setNumOfNotCoveredGoals(this, totalGoals-coverage);
@@ -510,8 +510,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			
 		}
 		
-		
-			
 		noveltywithArchive(predicateCountList,archive);
 		
 		Collection<Integer> curvalues = currentpredicateCount.values();
@@ -526,11 +524,14 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			
 			if(currentIterator.hasNext() && otherIterator.hasNext())
 				distance +=Math.abs(currentIterator.next()-otherIterator.next());
-		}
+			else if(otherIterator.hasNext())
+				distance +=otherIterator.next();
+				
+		}//end of for loop
 		
 		
 		distance = distance/population.size();
-		distance = normalize(distance);
+		//distance = normalize(distance);
 		return distance;
 		}
 	

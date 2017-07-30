@@ -58,7 +58,10 @@ public class MutationAssertionSystemTest extends SystemTestBase {
 		Object result = evosuite.parseCommandLine(command);
 
 		GeneticAlgorithm<?> ga = getGAFromResult(result);
-		return (TestSuiteChromosome) ga.getBestIndividual();
+		if(ga.getClass().getName().contains("NOVELTY"))
+			return (TestSuiteChromosome) ga.getBestIndividualNovelty();
+		else
+			return (TestSuiteChromosome) ga.getBestIndividual();
 	}
 
 	@Ignore

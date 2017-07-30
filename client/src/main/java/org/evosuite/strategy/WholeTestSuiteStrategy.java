@@ -171,14 +171,29 @@ public class WholeTestSuiteStrategy extends TestGenerationStrategy {
 			LoggingUtils.getEvoLogger().info("");
 		
 		if(!Properties.IS_RUNNING_A_SYSTEM_TEST) { //avoid printing time related info in system tests due to lack of determinism
-			LoggingUtils.getEvoLogger().info("* Search finished after "
-					+ (endTime - startTime)
-					+ "s and "
-					+ algorithm.getAge()
-					+ " generations, "
-					+ MaxStatementsStoppingCondition.getNumExecutedStatements()
-					+ " statements, best individual has fitness: "
-					+ testSuite.getFitness());
+			if(algorithm.getClass().getName().contains("Novelty"))
+			{
+				LoggingUtils.getEvoLogger().info("* Search finished after "
+						+ (endTime - startTime)
+						+ "s and "
+						+ algorithm.getAge()
+						+ " generations, "
+						+ MaxStatementsStoppingCondition.getNumExecutedStatements()
+						+ " statements, best individual has novelty metric: "
+						+ testSuite.getNovelty());
+			}
+			else {
+				LoggingUtils.getEvoLogger().info("* Search finished after "
+						+ (endTime - startTime)
+						+ "s and "
+						+ algorithm.getAge()
+						+ " generations, "
+						+ MaxStatementsStoppingCondition.getNumExecutedStatements()
+						+ " statements, best individual has fitness: "
+						+ testSuite.getFitness());
+			}
+				
+			
 		}
 
 		// Search is finished, send statistics

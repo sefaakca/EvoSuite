@@ -291,10 +291,10 @@ public class MOSA<T extends Chromosome> extends AbstractMOSA<T> {
 			best.addTest((TestChromosome) test);
 		}
 		// compute overall fitness and coverage
-		double coverage = ((double) this.getNumberOfCoveredGoals()) / ((double) this.fitnessFunctions.size());
-		for (TestSuiteNoveltyFunction suiteFitness : suiteNovelties){
-			best.setCoverageNovelty(suiteFitness, coverage);
-			best.setNovelty(suiteFitness,  this.noveltyFunctions.size() - this.getNumberOfCoveredGoals());
+		double coverage = ((double) this.getNumberOfCoveredGoals()) / ((double) this.noveltyFunctions.size());
+		for (TestSuiteNoveltyFunction suiteNovelty : suiteNovelties){
+			best.setCoverageNovelty(suiteNovelty, coverage);
+			best.setNovelty(suiteNovelty,  this.noveltyFunctions.size() - this.getNumberOfCoveredGoals());
 		}
 		//suiteFitness.getFitness(best);
 		return (T) best;

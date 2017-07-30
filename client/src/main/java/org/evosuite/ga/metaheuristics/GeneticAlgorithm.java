@@ -309,7 +309,7 @@ public abstract class GeneticAlgorithm<T extends Chromosome> implements SearchAl
 			// be the case that the improvement was so good, that the individual
 			// has surpassed to the previous individual, which makes the population
 			// list not sorted any more. 
-			if (!populationIsSorted()) {
+			if (!populationIsSortedNovelty()) {
 				this.sortPopulationNovelty();
 			}
 		}
@@ -321,6 +321,21 @@ public abstract class GeneticAlgorithm<T extends Chromosome> implements SearchAl
 	 * @return true if the population is sorted (or empty)
 	 */
 	private boolean populationIsSorted() {
+		Chromosome previousIndividual = null;
+		for (Chromosome currentIndividual : this.population) {
+			if (previousIndividual!=null) {
+				if (!isBetterOrEqual(previousIndividual, currentIndividual)) {
+					// at least two individuals are not sorted
+					return false;
+				}
+			}
+			previousIndividual = currentIndividual;
+		}
+		// the population is sorted (or empty)
+		return true;
+	}
+	
+	private boolean populationIsSortedNovelty(){
 		Chromosome previousIndividual = null;
 		for (Chromosome currentIndividual : this.population) {
 			if (previousIndividual!=null) {
@@ -1108,12 +1123,8 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 	protected void sortPopulationNovelty() {
 		if (Properties.SHUFFLE_GOALS)
 			Randomness.shuffle(population);
-
-		if (isMaximizationFunctionNovelty()) {
-			Collections.sort(population);
-		} else {
-			Collections.sort(population,Collections.reverseOrder());
-		}
+			
+		Collections.sort(population,Collections.reverseOrder());
 	}
 
 	/**
@@ -1302,6 +1313,15 @@ protected void updateBestIndividualFromArchiveNovelty() {
 			return chromosome1.compareTo(chromosome2) >= 0;
 		} else {
 			return chromosome1.compareTo(chromosome2) <= 0;
+		}
+	}
+	
+	protected boolean isBetterOrEqualNovelty(Chromosome chromosome1, Chromosome chromosome2) {
+		// if (fitnessFunction.isMaximizationFunction()) {
+		if (getNoveltyFunction().isMaximizationFunctionNovelty()) {
+			return chromosome1.compareToNovelty(chromosome2) <= 0;
+		} else {
+			return chromosome1.compareToNovelty(chromosome2) >= 0;
 		}
 	}
 

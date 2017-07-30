@@ -197,7 +197,7 @@ public class PropertiesSuiteGAFactory extends PropertiesSearchAlgorithmFactory<T
 				ns.setReplacementFunction(new NoveltyReplacementFunction());
 			} else {
 				// use default
-				ns.setReplacementFunction(new TestSuiteReplacementFunction());
+				ns.setReplacementFunction(new NoveltyReplacementFunction());//TestSuiteReplacementFunction
 			}
 			return ns;
 		}

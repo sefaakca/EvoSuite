@@ -93,7 +93,10 @@ public class StatisticsListener implements SearchListener {
 			 */
 			timeFromLastGenerationUpdate = System.currentTimeMillis();
 			// Enqueue current best individual
-			individuals.offer(algorithm.getBestIndividual());
+			if(algorithm.equals("NOVELTY"))
+				individuals.offer(algorithm.getBestIndividualNovelty());
+			else
+				individuals.offer(algorithm.getBestIndividual());
             // send timeline variable directly
             ClientServices.getInstance().getClientNode().trackOutputVariable(RuntimeVariable.TotalExceptionsTimeline, ExceptionCoverageSuiteFitness.getMaxExceptionsCovered());
 		}	

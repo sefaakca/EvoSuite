@@ -62,7 +62,7 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 	}
 	
 	private double getBestNovelty() {
-		T bestIndividual = getBestIndividual();
+		T bestIndividual = getBestIndividualNovelty();
 		for (NoveltyFunction<T> nf : noveltyFunctions) {
 			nf.getNovelty(bestIndividual,population,archive);
 		}
@@ -77,11 +77,10 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 		List<T> newGeneration = new ArrayList<T>();
 		
 		// Elitism
-		//Sefa elitisim degisecek
 		logger.debug("Elitism");
 		newGeneration.addAll(elitisimForNovelty());
 		archive.addAll(elitisimForNovelty());
-		while (!isNextPopulationFull(newGeneration) && !isFinished() ) //
+		while (!isNextPopulationFull(newGeneration) &&  !isFinished() ) //
 		{
 			logger.debug("Generating offspring");
 			
@@ -140,12 +139,8 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 					} 
 					else
 					{
-						// if(Properties.ADAPTIVE_LOCAL_SEARCH ==
-						// AdaptiveLocalSearchTarget.ALL)
-						// applyAdaptiveLocalSearch(offspring1);
 						newGeneration.add(offspring1);
-						
-						
+
 					}
 
 					if (isTooLong(offspring2) || offspring2.size() == 0) {
@@ -153,16 +148,12 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 					}
 					else
 					{
-						// if(Properties.ADAPTIVE_LOCAL_SEARCH ==
-						// AdaptiveLocalSearchTarget.ALL)
-						// applyAdaptiveLocalSearch(offspring2);
 						newGeneration.add(offspring2);
 						
 					}
 
 					if (rejected == 1)
 						newGeneration.add(Randomness.choice(parent1, parent2));
-						//Sefa Archive da eklenecek.
 					else if (rejected == 2) {
 						newGeneration.add(parent1);
 						newGeneration.add(parent2);
@@ -182,7 +173,6 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 			population = newGeneration;
 			// archive
 			updateNoveltyFunctionsAndValues(archive);
-			//updateFitnessFunctionsAndValues();
 			currentIteration++;
 
 	}
@@ -231,9 +221,8 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 			bestNoveltyMetric = 0.0;
 			lastbestNoveltyMetric = 0.0;
 		}
-		
+
 		while (!isFinished()) {
-			
 			logger.info("Population size before: " + population.size());
 			// related to Properties.ENABLE_SECONDARY_OBJECTIVE_AFTER;
 			// check the budget progress and activate a secondary criterion
@@ -304,11 +293,6 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 		notifySearchFinished();
 		
 	}
-	
-   	
-	/**
-	 * Calculate the Novelty Metric of each individuals.
-	 */
 	
 	
 	public void setReplacementFunction(ReplacementFunction replacement_function) {

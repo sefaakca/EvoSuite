@@ -250,8 +250,12 @@ public class TestSuiteMinimizer {
         if (Properties.MINIMIZE_SECOND_PASS) {
             removeRedundantTestCases(suite);
         }
-
-        double suiteCoverage = suite.getCoverage();
+        double suiteCoverage = 0;
+        if(suite.getFitnessValues().isEmpty())
+        	suiteCoverage = suite.getCoverageNovelty();
+        else
+        	suiteCoverage =suite.getCoverage();
+        
         logger.info("Setting coverage to: " + suiteCoverage);
 
         ClientState state = ClientState.MINIMIZATION;

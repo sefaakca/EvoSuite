@@ -54,9 +54,11 @@ public class RelativeSuiteLengthBloatControl implements BloatControlFunction, Se
 	public boolean isTooLong(Chromosome chromosome) {
 
 		// Always accept if fitness is better
-		if (chromosome.getFitness() < best_fitness)
-			return false;
+	//	if (chromosome.getFitness() < best_fitness)
+		//	return false;
 
+		if(chromosome.getNovelty()<best_fitness)
+			return false;
 		// logger.debug("Current - max: "+((TestSuiteChromosome)chromosome).length()+" - "+current_max);
 		if (current_max > 0) {
 			// if(((TestSuiteChromosome)chromosome).length() > bloat_factor *
@@ -82,12 +84,23 @@ public class RelativeSuiteLengthBloatControl implements BloatControlFunction, Se
 	 */
 	@Override
 	public void iteration(GeneticAlgorithm<?> algorithm) {
-		Chromosome best = algorithm.getBestIndividual();
-		if (best instanceof TestSuiteChromosome)
-			current_max = ((TestSuiteChromosome) best).totalLengthOfTestCases();
-		if (best instanceof TestChromosome)
-			current_max = ((TestChromosome) best).size();
-		best_fitness = best.getFitness();
+		if(algorithm.getClass().getName().contains("Novelty")){
+			Chromosome best = algorithm.getBestIndividualNovelty();
+			if (best instanceof TestSuiteChromosome)
+				current_max = ((TestSuiteChromosome) best).totalLengthOfTestCases();
+			if (best instanceof TestChromosome)
+				current_max = ((TestChromosome) best).size();
+			best_fitness = best.getNovelty();
+		}
+		else{
+			Chromosome best = algorithm.getBestIndividual();
+			if (best instanceof TestSuiteChromosome)
+				current_max = ((TestSuiteChromosome) best).totalLengthOfTestCases();
+			if (best instanceof TestChromosome)
+				current_max = ((TestChromosome) best).size();
+			best_fitness = best.getFitness();
+		}
+		
 	}
 
 	/** {@inheritDoc} */

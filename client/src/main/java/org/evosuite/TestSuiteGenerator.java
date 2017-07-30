@@ -454,9 +454,14 @@ public class TestSuiteGenerator {
 			CoverageCriteriaAnalyzer.analyzeCoverage(testSuite);
 		}
 
-		double coverage = testSuite.getCoverageNovelty();
-		if(coverage==0.0)
+		
+		double coverage = 0;
+		
+		if(testSuite.getFitnessValues().isEmpty())
+			coverage=testSuite.getCoverageNovelty();
+		else
 			coverage=testSuite.getCoverage();
+		
 		if (ArrayUtil.contains(Properties.CRITERION, Criterion.MUTATION)
 				|| ArrayUtil.contains(Properties.CRITERION, Criterion.STRONGMUTATION)) {
 			// SearchStatistics.getInstance().mutationScore(coverage);
