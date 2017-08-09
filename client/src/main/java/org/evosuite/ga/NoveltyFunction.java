@@ -3,6 +3,8 @@ package org.evosuite.ga;
 import java.io.Serializable;
 import java.util.List;
 
+import org.evosuite.testcase.TestChromosome;
+import org.evosuite.testsuite.TestSuiteChromosome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,8 @@ public abstract class NoveltyFunction<T extends Chromosome> implements Serializa
 	
 	public abstract double getNovelty(T individual, List<T> population , List<T> archive);
 	
+	
+	
 	public static double normalize(double value) throws IllegalArgumentException {
 		if (value < 0d) {
 			throw new IllegalArgumentException("Values to normalize cannot be negative");
@@ -49,6 +53,7 @@ public abstract class NoveltyFunction<T extends Chromosome> implements Serializa
 			return 1.0;
 		}
 		return value / (1.0 + value);
+		
 	}
 	
 	/**

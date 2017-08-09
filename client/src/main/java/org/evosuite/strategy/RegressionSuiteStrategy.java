@@ -213,7 +213,7 @@ public class RegressionSuiteStrategy extends TestGenerationStrategy {
 		}
 
 		LoggingUtils.getEvoLogger()
-				.info("* Resulting test suite's coverage: " + NumberFormat.getPercentInstance().format(coverage));
+				.info("* Resulting test suite's coverage regression: " + NumberFormat.getPercentInstance().format(coverage));
 
 		algorithm.printBudget();
 

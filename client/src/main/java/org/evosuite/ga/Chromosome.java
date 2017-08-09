@@ -22,10 +22,14 @@ package org.evosuite.ga;
 
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.evosuite.ga.localsearch.LocalSearchObjective;
+import org.evosuite.ga.metaheuristics.MonotonicGA;
+import org.evosuite.ga.metaheuristics.NoveltySearch2;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.PublicCloneable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,18 +158,18 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 	{
 		this.noveltyValues.put(nf, noveltyValue);
 		this.previousNoveltyValues.put(nf, noveltyValue);
-		//this.coverageValues.put(key, value);
-		//this.numsCoveredGoals.put(key, 0);
-		//this.numsNotCoveredGoals.put(key, -1);
+		this.coverageValuesNovelty.put(nf, coverage);
+		this.numsCoveredGoalsNovelty.put(nf, 0);
+		this.numsNotCoveredGoalsNovelty.put(nf, -1);
 	}
 	
 	public void addNovelty(NoveltyFunction<?> nf, double noveltyValue, double coverage, int numCoveredGoals)
 	{
 		this.noveltyValues.put(nf, noveltyValue);
 		this.previousNoveltyValues.put(nf, noveltyValue);
-		//this.coverageValues.put(key, coverage);
-		//this.numsCoveredGoals.put(key, numCoveredGoals);
-		//this.numsNotCoveredGoals.put(key, -1);
+		this.coverageValuesNovelty.put(nf, coverage);
+		this.numsCoveredGoalsNovelty.put(nf, numCoveredGoals);
+		this.numsNotCoveredGoalsNovelty.put(nf, -1);
 		
 	}
 	
@@ -380,12 +384,25 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 	 */
 	@Override
 	public int compareTo(Chromosome c) {
-		int i = (int) Math.signum(this.getFitness() - c.getFitness());
-		if (i == 0){
-			return compareSecondaryObjective(c);
-		}else
-			return i;
+		
+		if(!c.getFitnessValues().isEmpty())
+		{
+			int i = (int) Math.signum(this.getFitness() - c.getFitness());
+			if (i == 0){
+				return compareSecondaryObjective(c);
+			}else
+				return i;
+		}
+		else
+		{
+			int i = (int) Math.signum(c.getNovelty() - this.getNovelty());
+			if (i == 0){
+				return compareSecondaryObjective(c);
+			}else
+				return i;
+		}
 	}
+	
 	
 	public int compareToNovelty(Chromosome c){
 		int i = (int) Math.signum(this.getNovelty() - c.getNovelty());
@@ -544,6 +561,22 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
         return sum;
     }
 	
+	public int getNumOfCoveredGoalsNovelty() {
+        int sum = 0;
+        for (NoveltyFunction<?> noveltyFunction : numsCoveredGoalsNovelty.keySet()) {
+            sum += numsCoveredGoalsNovelty.get(noveltyFunction);
+        }
+        return sum;
+    }
+	
+	public int getNumOfNotCoveredGoalsNovelty() {
+        int sum = 0;
+        for (NoveltyFunction<?> noveltyFunction : numsCoveredGoalsNovelty.keySet()) {
+            sum += numsNotCoveredGoalsNovelty.get(noveltyFunction);
+        }
+        return sum;
+    }
+	
 	public int getNumOfNotCoveredGoals() {
         int sum = 0;
         for (FitnessFunction<?> fitnessFunction : numsNotCoveredGoals.keySet()) {
@@ -551,6 +584,16 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
         }
         return sum;
     }
+	
+	public void setNumsOfCoveredGoalsNovelty(Map<NoveltyFunction<?>, Integer> fits) {
+		this.numsCoveredGoalsNovelty.clear();
+		this.numsCoveredGoalsNovelty.putAll(fits);
+	}
+	
+	public void setNumsOfNotCoveredGoalsNovelty(Map<NoveltyFunction<?>, Integer> fits) {
+		this.numsNotCoveredGoalsNovelty.clear();
+		this.numsNotCoveredGoalsNovelty.putAll(fits);
+	}
 
 	public void setNumsOfCoveredGoals(Map<FitnessFunction<?>, Integer> fits) {
 		this.numsCoveredGoals.clear();

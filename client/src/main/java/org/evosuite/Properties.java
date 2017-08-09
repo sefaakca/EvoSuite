@@ -556,7 +556,7 @@ public class Properties {
 
 	/** Constant <code>ELITE=1</code> */
 	@Parameter(key = "elite", group = "Search Algorithm", description = "Elite size for search algorithm")
-	public static int ELITE = 1;
+	public static int ELITE = 10;
 
 	/** Constant <code>TOURNAMENT_SIZE=10</code> */
 	@Parameter(key = "tournament_size", group = "Search Algorithm", description = "Number of individuals for tournament selection")
@@ -676,7 +676,7 @@ public class Properties {
 
 	/** Constant <code>STOP_ZERO=true</code> */
 	@Parameter(key = "stop_zero", group = "Search Algorithm", description = "Stop optimization once goal is covered")
-	public static boolean STOP_ZERO = true;
+	public static boolean STOP_ZERO = false;
 
 	/** Constant <code>DYNAMIC_LIMIT=false</code> */
 	@Parameter(key = "dynamic_limit", group = "Search Algorithm", description = "Multiply search budget by number of test goals")
@@ -957,7 +957,7 @@ public class Properties {
 
 	/** Constant <code>MINIMIZE=true</code> */
 	@Parameter(key = "minimize", group = "Output", description = "Minimize test suite after generation")
-	public static boolean MINIMIZE = true;
+	public static boolean MINIMIZE = false;
 
 	/** Constant <code>MINIMIZE_SECOND_PASS=true</code> */
 	@Parameter(key = "minimize_second_pass", group = "Output", description = "Perform a second minimization pass as the first one may retain subsumed tests")

@@ -143,7 +143,6 @@ public class WholeTestSuiteStrategy extends TestGenerationStrategy {
 		} else {
 			if(flag)
 			{
-				zeroFitness.setFinished();
 				testSuite=new TestSuiteChromosome();
 				for(NoveltyFunction<?> nf : noveltyFunctions){
 					testSuite.setCoverageNovelty(nf, 1.0);

@@ -31,6 +31,7 @@ import org.evosuite.ga.FitnessFunction;
 import org.evosuite.ga.FitnessReplacementFunction;
 import org.evosuite.ga.ReplacementFunction;
 import org.evosuite.ga.localsearch.LocalSearchBudget;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,6 @@ public class MonotonicGA<T extends Chromosome> extends GeneticAlgorithm<T> {
 	@Override
 	protected void evolve() {
 		List<T> newGeneration = new ArrayList<T>();
-
 		// Elitism
 		logger.debug("Elitism");
 		newGeneration.addAll(elitism());
@@ -97,7 +97,7 @@ public class MonotonicGA<T extends Chromosome> extends GeneticAlgorithm<T> {
 
 		while (!isNextPopulationFull(newGeneration) && !isFinished()) {
 			logger.debug("Generating offspring");
-
+			
 			T parent1 = selectionFunction.select(population);
 			T parent2;
 			if (Properties.HEADLESS_CHICKEN_TEST)
@@ -220,12 +220,10 @@ public class MonotonicGA<T extends Chromosome> extends GeneticAlgorithm<T> {
 		if (Properties.ENABLE_SECONDARY_OBJECTIVE_AFTER > 0 || Properties.ENABLE_SECONDARY_OBJECTIVE_STARVATION) {
 			disableFirstSecondaryCriterion();
 		}
-
 		if (population.isEmpty()) {
 			initializePopulation();
 			assert!population.isEmpty() : "Could not create any test";
 		}
-
 		logger.debug("Starting evolution");
 		int starvationCounter = 0;
 		double bestFitness = Double.MAX_VALUE;
@@ -237,7 +235,6 @@ public class MonotonicGA<T extends Chromosome> extends GeneticAlgorithm<T> {
 
 		
 		while (!isFinished()) {
-			
 			logger.info("Population size before: " + population.size());
 			// related to Properties.ENABLE_SECONDARY_OBJECTIVE_AFTER;
 			// check the budget progress and activate a secondary criterion

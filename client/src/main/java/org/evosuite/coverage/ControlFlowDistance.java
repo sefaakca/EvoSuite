@@ -23,6 +23,7 @@
 package org.evosuite.coverage;
 
 import org.evosuite.ga.FitnessFunction;
+import org.evosuite.ga.NoveltyFunction;
 
 /**
  * <p>ControlFlowDistance class.</p>
@@ -141,6 +142,12 @@ public class ControlFlowDistance implements Comparable<ControlFlowDistance> {
 	public double getResultingBranchFitness() {
 
 		return approachLevel + FitnessFunction.normalize(branchDistance);
+	}
+	
+	public double getResultingBranchNovelty(){
+	
+		return approachLevel + NoveltyFunction.normalize(branchDistance);
+		
 	}
 
 	/** {@inheritDoc} */

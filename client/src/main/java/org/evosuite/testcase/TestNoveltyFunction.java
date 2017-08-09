@@ -16,6 +16,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 	
 	public abstract double getNovelty(TestChromosome individual, ExecutionResult result);
 	
+	public abstract double getNovelty(TestChromosome individual,List<TestChromosome> population, List<TestChromosome> archive);
 	
 	@Override
 	public int compareTo(TestNoveltyFunction o) {
@@ -104,6 +105,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 	public double getNovelty(TestChromosome individual) {
 		// TODO Auto-generated method stub
 		logger.trace("Executing test case on original");
+		
 		ExecutionResult origResult = individual.getLastExecutionResult();
 		if (origResult == null || individual.isChanged()) {
 			origResult = runTest(individual.test);
@@ -111,7 +113,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 			individual.setChanged(false);
 		}
 		
-
+		
 		double noveltyMetric = getNovelty(individual, origResult);
 		updateIndividual(this, individual, noveltyMetric);
 
@@ -120,7 +122,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 	
 	
 
-	private ExecutionResult runTest(TestCase test) {
+	protected ExecutionResult runTest(TestCase test) {
 		// TODO Auto-generated method stub
 		return TestCaseExecutor.runTest(test);
 	}
@@ -129,6 +131,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
 	
 	/*
 	@Override

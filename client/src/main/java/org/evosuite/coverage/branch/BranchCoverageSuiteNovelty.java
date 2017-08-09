@@ -17,15 +17,19 @@ import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.archive.TestsArchiveNovelty;
 import org.evosuite.ga.Chromosome;
+import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.graphs.cfg.CFGMethodAdapter;
 import org.evosuite.testcase.ExecutableChromosome;
+import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.TestNoveltyFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testsuite.AbstractTestSuiteChromosome;
+import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteNoveltyFunction;
+import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +41,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 	private static final long serialVersionUID = 2986859399730533523L;
 	private final static Logger logger = LoggerFactory.getLogger(TestSuiteNoveltyFunction.class);
 	List<Map<Integer, Integer>> predicateCountList = new ArrayList<Map<Integer, Integer>>();
+	List<Map<Integer, Integer>> predicateCountListIndividual = new ArrayList<Map<Integer, Integer>>();
 	
 	// Coverage targets
 		public int totalGoals;
@@ -143,7 +148,9 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		// Collect stats in the traces 
 		boolean hasTimeoutOrTestException = analyzeTraces(suite, results, predicateCount,
 		                                                  callCount, trueDistance,
-		                                                  falseDistance);
+		                                                 falseDistance);
+		
+		
 		// In case there were exceptions in a constructor
 		handleConstructorExceptions(suite, results, callCount);
 
@@ -531,7 +538,8 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		
 		
 		distance = distance/population.size();
-		//distance = normalize(distance);
+		distance = normalize(distance);
+		
 		return distance;
 		}
 	
@@ -562,14 +570,146 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		}
 		
 	}
+	
+	/*
+	@SuppressWarnings("finally")
+	public double getNovelty(TestSuiteChromosome individual, List<TestChromosome> population,
+			List<TestChromosome> archive) {
+		// TODO Auto-generated method stub	
+		try
+		{
+			Thread.sleep(50);
+			
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
+		finally {
+			double noveltymetric = 0;
+			int cov=0;
+			//LoggingUtils.getEvoLogger().info("TEST SUITE NOVELTY FUNCTION");
+			List<ExecutionResult> result=runTestSuite(individual);
+			Iterator<ExecutionResult>itexec= result.iterator();
+			Map<Integer, Integer> Counter = new HashMap<Integer, Integer>();
+			while(itexec.hasNext())
+			{
+				Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
+				Map<Integer, Integer> restofthepopCount = new HashMap<Integer, Integer>();			
+				if(currentpredicateCount.containsKey(itexec.next().getTrace().getPredicateExecutionCount()))
+				currentpredicateCount.putAll(itexec.next().getTrace().getPredicateExecutionCount());	
+				Iterator<TestChromosome> popit = population.iterator();
+				Iterator<TestChromosome> archit = archive.iterator();
+				
+			
+				
+				//Predicate Counts for archive
+				while(archit.hasNext()){
+					org.evosuite.testcase.TestCase arc = archit.next().getTestCase();
+					ExecutionResult otherresult = runTest(arc);
+					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
+					if(!predicateCountList.contains(restofthepopCount))
+						predicateCountList.add(restofthepopCount);
+				}
+			
+				//Predicate Counts for rest of the pop
+				while (popit.hasNext()) {
+			
+					org.evosuite.testcase.TestCase others = popit.next().getTestCase();
+
+					ExecutionResult otherresult = runTest(others);
+			
+					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
+					if(!predicateCountList.contains(restofthepopCount))
+						predicateCountList.add(restofthepopCount);
+				}
+			
+				//predicateCountList.add(restofthepopCount);
 		
-	
+				Collection<Integer> curvalues = currentpredicateCount.values();
+				//double noveltymetric = 0;
+				//Collection<Integer> restvalues = restofthepopCount.values();
+				
+				for(int i =0 ; i<predicateCountList.size();i++)
+				{
+					Collection<Integer> othervalues = predicateCountList.get(i).values();
+					Iterator<Integer> currentIterator = curvalues.iterator();
+					Iterator<Integer> otherIterator = othervalues.iterator();
+					if(currentIterator.hasNext() && otherIterator.hasNext())
+						noveltymetric +=Math.abs(currentIterator.next()-otherIterator.next());
+					else if(otherIterator.hasNext())
+						noveltymetric +=otherIterator.next();
 
-	
+				}
 
+				noveltymetric = (noveltymetric/population.size());
+				noveltymetric = normalize(noveltymetric);
+				
+			}
+			individual.setCoverageNovelty(this, (double)cov/(double)totalGoals);
+			updateIndividual(this, individual, noveltymetric);
+			return noveltymetric;
+			
+			/*
+			List<ExecutionResult> result=runTestSuite(individual);
+			Iterator<ExecutionResult>itexec= result.iterator();
+			
+			if(itexec.hasNext())
+			{
+				Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
+				Map<Integer, Integer> restofthepopCount = new HashMap<Integer, Integer>();			
+				currentpredicateCount.putAll(itexec.next().getTrace().getPredicateExecutionCount());	
+				Iterator<TestChromosome> popit = population.iterator();
+				Iterator<TestChromosome> archit = archive.iterator();
+			
+				//Predicate Counts for archive
+				while(archit.hasNext()){
+					org.evosuite.testcase.TestCase arc = archit.next().getTestCase();
+					ExecutionResult otherresult = runTest(arc);
+					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
+				
+				}
+			
+				//Predicate Counts for rest of the pop
+				while (popit.hasNext()) {
+			
+					org.evosuite.testcase.TestCase others = popit.next().getTestCase();
 
+					ExecutionResult otherresult = runTest(others);
+			
+					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
+				}
+			
+				predicateCountList.add(restofthepopCount);
+		
+				Collection<Integer> curvalues = currentpredicateCount.values();
+				double distance = 0;
+				//Collection<Integer> restvalues = restofthepopCount.values();
+		
+				for(int i =0 ; i<predicateCountList.size();i++)
+				{
+					Collection<Integer> othervalues = predicateCountList.get(i).values();
+					Iterator<Integer> currentIterator = curvalues.iterator();
+					Iterator<Integer> otherIterator = othervalues.iterator();
+					if(currentIterator.hasNext() && otherIterator.hasNext())
+						distance +=Math.abs(currentIterator.next()-otherIterator.next());
+					else if(otherIterator.hasNext())
+						distance +=otherIterator.next();
+				}
 
-	
-	
-	
+				distance = distance/population.size();
+				distance = normalize(distance);
+				updateIndividual(this, individual, distance);
+				return distance;
+			}
+		else{
+			updateIndividual(this, individual, 0);
+			return 0;
+		}
+			
+		}
+		
+
+	}
+	*/	
 }
+

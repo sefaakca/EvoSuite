@@ -216,6 +216,8 @@ public class CoverageCriteriaAnalyzer {
 
         
         TestFitnessFactory factory = FitnessFunctions.getFitnessFactory(criterion);
+        TestNoveltyFactory factoryNovelty = NoveltyFunctions.getNoveltyFactory(criterion);
+        
         if(recalculate) {
             reinstrument(testSuiteCopy, criterion);
 
@@ -234,10 +236,10 @@ public class CoverageCriteriaAnalyzer {
 
       
         
-        
+      
         List<TestFitnessFunction> goals = factory.getCoverageGoals();
         Collections.sort(goals);
-
+       
         StringBuffer buffer = new StringBuffer(goals.size());
         int covered = 0;
 
@@ -253,8 +255,7 @@ public class CoverageCriteriaAnalyzer {
                     LoggingUtils.getEvoLogger().info(" - Missed goal {}", goal.toString());
             }
         }
-      
-
+     
         coverageBitString.put(criterion.name(), buffer);
         ClientServices.getInstance().getClientNode().trackOutputVariable(RuntimeVariable.CoverageBitString,
                 coverageBitString.size() == 0 ? "0" : coverageBitString.values().toString().replace("[", "").replace("]", "").replace(", ", ""));

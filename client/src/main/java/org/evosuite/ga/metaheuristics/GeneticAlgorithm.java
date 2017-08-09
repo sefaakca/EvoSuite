@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +87,8 @@ public abstract class GeneticAlgorithm<T extends Chromosome> implements SearchAl
 
 	/** Current population */
 	protected List<T> population = new ArrayList<T>();
+	
+	List<T> Testarchive = new ArrayList<T>();
 
 	/** Generator for initial population */
 	protected ChromosomeFactory<T> chromosomeFactory;
@@ -339,7 +342,7 @@ public abstract class GeneticAlgorithm<T extends Chromosome> implements SearchAl
 		Chromosome previousIndividual = null;
 		for (Chromosome currentIndividual : this.population) {
 			if (previousIndividual!=null) {
-				if (!isBetterOrEqual(previousIndividual, currentIndividual)) {
+				if (!isBetterOrEqualNovelty(previousIndividual, currentIndividual)) {
 					// at least two individuals are not sorted
 					return false;
 				}
@@ -917,6 +920,8 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 
 		return population.get(0);
 	}
+	
+	
 
 	/**
 	 * Return the individual(s) with the highest fitChromosomeess
@@ -1124,7 +1129,12 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 		if (Properties.SHUFFLE_GOALS)
 			Randomness.shuffle(population);
 			
-		Collections.sort(population,Collections.reverseOrder());
+		//Collections.sort(population);//,Collections.reverseOrder()
+		if (isMaximizationFunctionNovelty()) {
+			Collections.sort(population,Collections.reverseOrder() );
+		} else {
+			Collections.sort(population);
+		}
 	}
 
 	/**
@@ -1134,6 +1144,14 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 	 */
 	public List<T> getPopulation() {
 		return population;
+	}
+	public void setArchive(List<T> newarchive)
+	{
+		Testarchive =newarchive;
+	}
+	
+	public List<T> getArchiveNovelty(){
+		return Testarchive;
 	}
 
 	/**
@@ -1166,8 +1184,10 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 	public boolean isFinished() {
 		for (StoppingCondition c : stoppingConditions) {
 			// logger.error(c + " "+ c.getCurrentValue());
-			if (c.isFinished())
+			//LoggingUtils.getEvoLogger().info("Stopping COnditions:"+c.toString());
+			if (c.isFinished()){
 				return true;
+			}
 		}
 		return false;
 	}

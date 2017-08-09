@@ -22,9 +22,11 @@ package org.evosuite.testcase;
 import java.util.List;
 
 import org.evosuite.ga.FitnessFunction;
+import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.execution.TestCaseExecutor;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.LoggingUtils;
 
 /**
  * Abstract base class for fitness functions for test case chromosomes
@@ -62,7 +64,6 @@ public abstract class TestFitnessFunction extends FitnessFunction<TestChromosome
 			individual.setChanged(false);
 		}
 
-		
 		double fitness = getFitness(individual, origResult);
 		updateIndividual(this, individual, fitness);
 

@@ -28,20 +28,27 @@ import java.util.Set;
 import org.evosuite.Properties;
 import org.evosuite.ShutdownTestWriter;
 import org.evosuite.Properties.Criterion;
+import org.evosuite.coverage.NoveltyFunctions;
 import org.evosuite.coverage.TestFitnessFactory;
+import org.evosuite.coverage.TestNoveltyFactory;
 import org.evosuite.rmi.ClientServices;
 import org.evosuite.ga.FitnessFunction;
+import org.evosuite.ga.NoveltyFunction;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.ga.stoppingconditions.MaxStatementsStoppingCondition;
 import org.evosuite.ga.stoppingconditions.StoppingCondition;
 import org.evosuite.statistics.RuntimeVariable;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.execution.ExecutionTracer;
+import org.evosuite.testcase.ExecutableChromosome;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
+import org.evosuite.testcase.TestNoveltyFunction;
+import org.evosuite.testsuite.AbstractTestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
 import org.evosuite.testsuite.TestSuiteMinimizer;
+import org.evosuite.testsuite.TestSuiteNoveltyFunction;
 import org.evosuite.testsuite.factories.FixedSizeTestSuiteChromosomeFactory;
 import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.LoggingUtils;
@@ -72,18 +79,30 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 		PropertiesTestGAFactory factory = new PropertiesTestGAFactory();
 		
 		List<TestSuiteFitnessFunction> fitnessFunctions = getFitnessFunctions();
+		
+		List<TestSuiteNoveltyFunction> noveltyFunctions = getNoveltyFunctions();
 
 		long start_time = System.currentTimeMillis() / 1000;
-
+		boolean flag =false;
 		// Get list of goals
         List<TestFitnessFactory<? extends TestFitnessFunction>> goalFactories = getFitnessFactories();
+        
+        List<TestNoveltyFactory<? extends TestNoveltyFunction>> goalFactoriesNovelty = getNoveltyFactories();
 		// long goalComputationStart = System.currentTimeMillis();
 		List<TestFitnessFunction> goals = new ArrayList<TestFitnessFunction>();
+		
+		List<TestNoveltyFunction> goalsNovelty = new ArrayList<TestNoveltyFunction>();
+		
 		LoggingUtils.getEvoLogger().info("* Total number of test goals: ");
         for (TestFitnessFactory<? extends TestFitnessFunction> goalFactory : goalFactories) {
             goals.addAll(goalFactory.getCoverageGoals());
             LoggingUtils.getEvoLogger().info("  - " + goalFactory.getClass().getSimpleName().replace("CoverageFactory", "")
                     + " " + goalFactory.getCoverageGoals().size());
+        }
+        
+        for (TestNoveltyFactory<? extends TestNoveltyFunction> goalFactoryNovelty : goalFactoriesNovelty) {
+            goalsNovelty.addAll(goalFactoryNovelty.getCoverageGoals());
+           
         }
 
 		if(!canGenerateTestsForSUT()) {
@@ -98,6 +117,7 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 		if (Properties.SHUFFLE_GOALS) {
 			// LoggingUtils.getEvoLogger().info("* Shuffling goals");
 			Randomness.shuffle(goals);
+			Randomness.shuffle(goalsNovelty);
 		}
 		ClientServices.getInstance().getClientNode().trackOutputVariable(RuntimeVariable.Total_Goals,
 		                                                                 goals.size());
@@ -109,6 +129,8 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 
 		StoppingCondition stoppingCondition = getStoppingCondition();
 		TestSuiteChromosome suite = (TestSuiteChromosome) bootstrapRandomSuite(fitnessFunctions.get(0), goalFactories.get(0)); // FIXME: just one fitness and one factory?!
+		TestSuiteChromosome suiteNOvelty = (TestSuiteChromosome) bootstrapRandomSuite(noveltyFunctions.get(0), goalFactories.get(0));
+	
 		Set<Integer> covered = new HashSet<Integer>();
 		int covered_goals = 0;
 		int num = 0;
@@ -120,6 +142,15 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 			}
 			num++;
 		}
+		num=0;
+		for (TestNoveltyFunction novelty_function : goalsNovelty) {
+			if (novelty_function.isCoveredBy(suiteNOvelty)) {
+				covered.add(num);
+				covered_goals++;
+			}
+			num++;
+		}
+		
 		if (covered_goals > 0)
 			LoggingUtils.getEvoLogger().info("* Random bootstrapping covered "
 			                                         + covered_goals + " test goals");
@@ -176,70 +207,126 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 
 				// FitnessFunction fitness_function = new
 				ga.addFitnessFunction(fitnessFunction);
+				if(ga.getClass().getName().contains("Novelty"))
+				{
+					flag=true;
+					for (TestNoveltyFunction nf : goalsNovelty) {
+						if(!ga.getNoveltyFunctions().contains(nf))
+						{
+							ga.addNoveltyFunction(nf);
+							
+						ga.generateSolution();
+						if (ga.getBestIndividualNovelty().getNovelty()>0.0 ){//> ) {
+							if (Properties.PRINT_COVERED_GOALS)
+								LoggingUtils.getEvoLogger().info("* Covered!"); // : " +
+							// fitness_function.toString());
+							logger.info("Found solution, adding to test suite at "
+						        + MaxStatementsStoppingCondition.getNumExecutedStatements());
+							TestChromosome best = (TestChromosome) ga.getBestIndividualNovelty();
+							//LoggingUtils.getEvoLogger().info("* distance : "+best.getTestCase().getCoveredGoals().size());
+							
+							if(!suiteNOvelty.getTestChromosomes().contains(best))
+							{
+								best.getTestCase().addCoveredGoal(nf);
+								suiteNOvelty.addTest(best);
+							// Calculate and keep track of overall fitness
+							for (TestSuiteNoveltyFunction novelty_function : noveltyFunctions){
+								novelty_function.getNovelty(suiteNOvelty, ga.getPopulation(), ga.getArchiveNovelty()); //getFitness(suite);
+							}
+							}
+							covered_goals++;
+							covered.add(num);
 
-				// Perform search
-				logger.info("Starting evolution for goal " + fitnessFunction);
-				ga.generateSolution();
+							// experiment:
+							if (Properties.SKIP_COVERED) {
+								Set<Integer> additional_covered_nums = getAdditionallyCoveredGoals(goals,
+							                                                                   covered,
+							                                                                   best);
+								// LoggingUtils.getEvoLogger().info("Additionally covered: "+additional_covered_nums.size());
+								for (Integer covered_num : additional_covered_nums) {
+									covered_goals++;
+									covered.add(covered_num);
+							}//end of for
+						}//end of if SKIP_COVERED
 
-				if (ga.getBestIndividual().getFitness() == 0.0) {
-					if (Properties.PRINT_COVERED_GOALS)
-						LoggingUtils.getEvoLogger().info("* Covered!"); // : " +
-					// fitness_function.toString());
-					logger.info("Found solution, adding to test suite at "
+					}//end of if ga.getBestIndividual().getFitness() == 0.0
+						
+							else {
+								logger.info("Found no solution for " + fitnessFunction + " at "
+								        + MaxStatementsStoppingCondition.getNumExecutedStatements());
+							}//end of else
+						}//if ga not contains
+					}//end of for
+					
+				}//end of if Novelty
+				else
+				{
+					flag=false;
+					// Perform search
+					logger.info("Starting evolution for goal " + fitnessFunction);
+					ga.generateSolution();
+				
+					if (ga.getBestIndividual().getFitness() == 0.0) {
+						if (Properties.PRINT_COVERED_GOALS)
+							LoggingUtils.getEvoLogger().info("* Covered!"); // : " +
+						// fitness_function.toString());
+						logger.info("Found solution, adding to test suite at "
 					        + MaxStatementsStoppingCondition.getNumExecutedStatements());
-					TestChromosome best = (TestChromosome) ga.getBestIndividual();
-					best.getTestCase().addCoveredGoal(fitnessFunction);
-					suite.addTest(best);
-					// Calculate and keep track of overall fitness
-					for (TestSuiteFitnessFunction fitness_function : fitnessFunctions)
-					    fitness_function.getFitness(suite);
+						TestChromosome best = (TestChromosome) ga.getBestIndividual();
+						best.getTestCase().addCoveredGoal(fitnessFunction);
+						suite.addTest(best);
+						// Calculate and keep track of overall fitness
+						for (TestSuiteFitnessFunction fitness_function : fitnessFunctions)
+							fitness_function.getFitness(suite);
 
-					covered_goals++;
-					covered.add(num);
+						covered_goals++;
+						covered.add(num);
 
-					// experiment:
-					if (Properties.SKIP_COVERED) {
-						Set<Integer> additional_covered_nums = getAdditionallyCoveredGoals(goals,
+						// experiment:
+						if (Properties.SKIP_COVERED) {
+							Set<Integer> additional_covered_nums = getAdditionallyCoveredGoals(goals,
 						                                                                   covered,
 						                                                                   best);
-						// LoggingUtils.getEvoLogger().info("Additionally covered: "+additional_covered_nums.size());
-						for (Integer covered_num : additional_covered_nums) {
-							covered_goals++;
-							covered.add(covered_num);
-						}
-					}
+							// LoggingUtils.getEvoLogger().info("Additionally covered: "+additional_covered_nums.size());
+							for (Integer covered_num : additional_covered_nums) {
+								covered_goals++;
+								covered.add(covered_num);
+						}//end of for
+					}//end of if SKIP_COVERED
 
-				} else {
-					logger.info("Found no solution for " + fitnessFunction + " at "
+				}//end of if ga.getBestIndividual().getFitness() == 0.0
+					else {
+						logger.info("Found no solution for " + fitnessFunction + " at "
 					        + MaxStatementsStoppingCondition.getNumExecutedStatements());
+					}//end of else
+				}//end of else
+			}//end of for
+			//statistics.iteration(suiteGA);
+			if (Properties.REUSE_BUDGET)
+				current_budget += stoppingCondition.getCurrentValue();
+			else
+				current_budget += budget + 1;
+
+			// print console progress bar
+			if (Properties.SHOW_PROGRESS
+					&& !(Properties.PRINT_COVERED_GOALS || Properties.PRINT_CURRENT_GOALS)) {
+				double percent = current_budget;
+				percent = percent / total_budget * 100;
+
+				double coverage = covered_goals;
+				coverage = coverage / total_goals * 100;
+
+				// ConsoleProgressBar.printProgressBar((int) percent, (int)
+				// coverage);
 				}
 
-				//statistics.iteration(suiteGA);
-				if (Properties.REUSE_BUDGET)
-					current_budget += stoppingCondition.getCurrentValue();
-				else
-					current_budget += budget + 1;
+			if (current_budget > total_budget)
+				break;
+			num++;
 
-				// print console progress bar
-				if (Properties.SHOW_PROGRESS
-				        && !(Properties.PRINT_COVERED_GOALS || Properties.PRINT_CURRENT_GOALS)) {
-					double percent = current_budget;
-					percent = percent / total_budget * 100;
-
-					double coverage = covered_goals;
-					coverage = coverage / total_goals * 100;
-
-					// ConsoleProgressBar.printProgressBar((int) percent, (int)
-					// coverage);
-				}
-
-				if (current_budget > total_budget)
-					break;
-				num++;
-
-				// break;
-			}
-		}
+			// break;
+			}//end of while
+		
 		if (Properties.SHOW_PROGRESS)
 			LoggingUtils.getEvoLogger().info("");
 
@@ -274,22 +361,41 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 
 		//statistics.searchFinished(suiteGA);
 		long end_time = System.currentTimeMillis() / 1000;
-		LoggingUtils.getEvoLogger().info("* Search finished after "
-		                                         + (end_time - start_time)
-		                                         + "s, "
-		                                         + current_budget
-		                                         + " statements, best individual has fitness "
-		                                         + suite.getFitness());
+		
+		if(flag)
+		{
+			//suite=suiteNOvelty;
+			LoggingUtils.getEvoLogger().info("* Search finished after "
+                    + (end_time - start_time)
+                    + "s, "
+                    + current_budget
+                    + " statements, best individual has novelty metric "
+                    + suiteNOvelty.getNovelty());
+		}
+		else
+		{
+			LoggingUtils.getEvoLogger().info("* Search finished after "
+                    + (end_time - start_time)
+                    + "s, "
+                    + current_budget
+                    + " statements, best individual has fitness "
+                    + suite.getFitness());
+		}
+			
+		
+		
         // Search is finished, send statistics
         sendExecutionStatistics();
 
-		LoggingUtils.getEvoLogger().info("* Covered " + covered_goals + "/"
-		                                         + goals.size() + " goals");
+		//LoggingUtils.getEvoLogger().info("* Covered " + covered_goals + "/"
+		  //                                       + goals.size() + " goals");
 		logger.info("Resulting test suite: " + suite.size() + " tests, length "
 		        + suite.totalLengthOfTestCases());
 
-
-		return suite;
+		if(flag)
+			return suiteNOvelty;
+		else
+			return suite;
 	}
 
 	private Set<Integer> getAdditionallyCoveredGoals(
@@ -319,6 +425,33 @@ public class IndividualTestStrategy extends TestGenerationStrategy {
 	
 	private TestSuiteChromosome bootstrapRandomSuite(FitnessFunction<?> fitness,
 	        TestFitnessFactory<?> goals) {
+
+		if (ArrayUtil.contains(Properties.CRITERION, Criterion.DEFUSE)
+	            || ArrayUtil.contains(Properties.CRITERION, Criterion.ALLDEFS)) {
+			LoggingUtils.getEvoLogger().info("* Disabled random bootstraping for dataflow criterion");
+			Properties.RANDOM_TESTS = 0;
+		}
+
+		if (Properties.RANDOM_TESTS > 0) {
+			LoggingUtils.getEvoLogger().info("* Bootstrapping initial random test suite");
+		} // else
+		  // LoggingUtils.getEvoLogger().info("* Bootstrapping initial random test suite disabled!");
+
+		FixedSizeTestSuiteChromosomeFactory factory = new FixedSizeTestSuiteChromosomeFactory(Properties.RANDOM_TESTS);
+
+		TestSuiteChromosome suite = factory.getChromosome();
+		if (Properties.RANDOM_TESTS > 0) {
+			TestSuiteMinimizer minimizer = new TestSuiteMinimizer(goals);
+			minimizer.minimize(suite, true);
+			LoggingUtils.getEvoLogger().info("* Initial test suite contains "
+			                                         + suite.size() + " tests");
+		}
+
+		return suite;
+	}
+	
+	private TestSuiteChromosome bootstrapRandomSuite(NoveltyFunction<?> novelty,
+			TestFitnessFactory<?> goals) {
 
 		if (ArrayUtil.contains(Properties.CRITERION, Criterion.DEFUSE)
 	            || ArrayUtil.contains(Properties.CRITERION, Criterion.ALLDEFS)) {

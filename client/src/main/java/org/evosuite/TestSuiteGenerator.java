@@ -457,10 +457,10 @@ public class TestSuiteGenerator {
 		
 		double coverage = 0;
 		
-		if(testSuite.getFitnessValues().isEmpty())
-			coverage=testSuite.getCoverageNovelty();
-		else
+		if(!testSuite.getFitnessValues().isEmpty())
 			coverage=testSuite.getCoverage();
+		else
+			coverage=testSuite.getCoverageNovelty();
 		
 		if (ArrayUtil.contains(Properties.CRITERION, Criterion.MUTATION)
 				|| ArrayUtil.contains(Properties.CRITERION, Criterion.STRONGMUTATION)) {
