@@ -472,7 +472,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 
 					if (trueDistance.containsKey(key)&&(Double.compare(dt, 0.0) == 0))
 						numCoveredBranches++;
-				}
+				} 
 				int missingMethods = 0;
 				for (String e : methods) {
 					if (!callCount.containsKey(e)) {
