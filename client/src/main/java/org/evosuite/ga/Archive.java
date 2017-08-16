@@ -19,8 +19,14 @@
  */
 package org.evosuite.ga;
 
+import java.util.List;
+
+
+
 public interface Archive<T extends Chromosome> {
 
 	public T createMergedSolution(T solution);
+	
+	public T createMergedSolution(T solution, List<T> population, List<T> list);
 	
 }

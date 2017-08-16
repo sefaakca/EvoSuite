@@ -96,7 +96,6 @@ public abstract class TestSuiteNoveltyFunction extends
 	public double getNovelty(TestSuiteChromosome individual, List<TestChromosome> population,
 			List<TestChromosome> archive) {
 		// TODO Auto-generated method stub	
-			
 			double noveltymetric = 0;
 			int cov=0;
 			List<ExecutionResult> result=runTestSuite(individual);

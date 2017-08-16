@@ -385,27 +385,19 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 	@Override
 	public int compareTo(Chromosome c) {
 		
-		if(!c.getFitnessValues().isEmpty())
-		{
+		
 			int i = (int) Math.signum(this.getFitness() - c.getFitness());
 			if (i == 0){
 				return compareSecondaryObjective(c);
 			}else
 				return i;
-		}
-		else
-		{
-			int i = (int) Math.signum(c.getNovelty() - this.getNovelty());
-			if (i == 0){
-				return compareSecondaryObjective(c);
-			}else
-				return i;
-		}
+		
 	}
 	
 	
 	public int compareToNovelty(Chromosome c){
-		int i = (int) Math.signum(this.getNovelty() - c.getNovelty());
+		//LoggingUtils.getEvoLogger().info("COmpare To Novelty");
+		int i = (int) Math.signum(c.getNovelty() - this.getNovelty());
 		if (i == 0){
 			return compareSecondaryObjective(c);
 		}else

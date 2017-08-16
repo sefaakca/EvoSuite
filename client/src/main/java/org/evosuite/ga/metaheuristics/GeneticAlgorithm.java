@@ -1129,12 +1129,23 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 		if (Properties.SHUFFLE_GOALS)
 			Randomness.shuffle(population);
 			
+		Collections.sort(population, new Comparator<T>() {
+			@Override
+			public int compare(Chromosome c1, Chromosome c2) {
+				// TODO Auto-generated method stub
+				//LoggingUtils.getEvoLogger().info("GA Compare Method");
+				return c1.compareToNovelty(c2);
+				
+			}
+		});
 		//Collections.sort(population);//,Collections.reverseOrder()
+		/*
 		if (isMaximizationFunctionNovelty()) {
 			Collections.sort(population,Collections.reverseOrder() );
 		} else {
 			Collections.sort(population);
 		}
+		*/
 	}
 
 	/**
@@ -1283,12 +1294,13 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 		
 		if(archive == null)
 			return;
+		
 
 		T best = archive.createMergedSolution(getBestIndividual());
-
 		// The archive may contain tests evaluated with a fitness function
 		// that is not part of the optimization (e.g. ibranch secondary objective)
 		Iterator<FitnessFunction<?>> it = best.getCoverageValues().keySet().iterator();
+		
 		while(it.hasNext()) {
 			FitnessFunction<?> ff = it.next();
 			if(!fitnessFunctions.contains(ff))
@@ -1299,12 +1311,11 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 	}
 	
 protected void updateBestIndividualFromArchiveNovelty() {
-		
+	
 		if(archive == null)
 			return;
 
-		T best = archive.createMergedSolution(getBestIndividual());
-
+		T best = archive.createMergedSolution(getBestIndividualNovelty(),population,getArchiveNovelty());
 		// The archive may contain tests evaluated with a fitness function
 		// that is not part of the optimization (e.g. ibranch secondary objective)
 		Iterator<NoveltyFunction<?>> it = best.getCoverageValuesNovelty().keySet().iterator();
@@ -1312,6 +1323,7 @@ protected void updateBestIndividualFromArchiveNovelty() {
 			NoveltyFunction<?> nf = it.next();
 			if(!noveltyFunctions.contains(nf))
 				it.remove();
+			
 		}
 		population.add(0, best);
 		

@@ -204,8 +204,9 @@ public class NoveltySearch2<T extends Chromosome> extends GeneticAlgorithm<T>{
 
 		}
 		// archive
-		TimeController.execute(this::updateBestIndividualFromArchiveNovelty, "update from archive", 5_000);
-
+		
+		updateBestIndividualFromArchiveNovelty();
+		//updateBestIndividualFromArchive();
 		notifySearchFinished();
 		
 	}

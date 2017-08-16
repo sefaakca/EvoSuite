@@ -12,12 +12,10 @@ import java.util.Map.Entry;
 
 import org.evosuite.Properties;
 import org.evosuite.ga.Archive;
-import org.evosuite.ga.FitnessFunction;
 import org.evosuite.ga.NoveltyFunction;
 import org.evosuite.setup.TestCluster;
 import org.evosuite.testcase.TestCase;
 import org.evosuite.testcase.TestChromosome;
-import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.TestNoveltyFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.statements.FunctionalMockStatement;
@@ -25,6 +23,7 @@ import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testcase.statements.reflection.PrivateFieldStatement;
 import org.evosuite.testcase.statements.reflection.PrivateMethodStatement;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 import org.evosuite.utils.generic.GenericAccessibleObject;
 import org.evosuite.utils.generic.GenericClass;
@@ -132,13 +131,19 @@ public enum TestsArchiveNovelty implements Archive<TestSuiteChromosome>, Seriali
 
 	    // Deactivate in case a test is executed and would access the archive
 	    // as this might cause a concurrent access
-	    Properties.TEST_ARCHIVE = false;
+	   
+		Properties.TEST_ARCHIVE = false;
 	    TestSuiteChromosome best = null;
 	    try {
+	    	//LoggingUtils.getEvoLogger().info("TEST ARCHIVE NOVELTY");
 	      best = suite.clone();
-
+	      LoggingUtils.getEvoLogger().info("BEST" + best.size());
+	      LoggingUtils.getEvoLogger().info("BEST" + best.getCoverageNovelty());
+			LoggingUtils.getEvoLogger().info("suite" + suite.size());
 	      for (Entry<TestNoveltyFunction, ExecutionResult> entry : testMap.entrySet()) {
-	        if (!entry.getKey().isCoveredBy(best)) {
+	    	  LoggingUtils.getEvoLogger().info("FOR LOOP");
+	    	  if (!entry.getKey().isCoveredBy(best)) {
+	    	  LoggingUtils.getEvoLogger().info("ADDED");
 	          TestChromosome chromosome = new TestChromosome();
 	          ExecutionResult copy = entry.getValue().clone();
 	          TestCase copyTest = copy.test.clone();
@@ -150,6 +155,7 @@ public enum TestsArchiveNovelty implements Archive<TestSuiteChromosome>, Seriali
 	      }
 	      for (NoveltyFunction nf : coveredGoals.keySet()) {
 	    	  nf.getNovelty(best);
+	    	 
 	      }
 	    } finally {
 	      Properties.TEST_ARCHIVE = true;
@@ -158,6 +164,7 @@ public enum TestsArchiveNovelty implements Archive<TestSuiteChromosome>, Seriali
 	    logger.info("Final test suite size from archive: " + best.size());
 
 	    return best;
+	    
 	}
 	
 	 public boolean isArchiveEmpty() {
@@ -396,6 +403,38 @@ public enum TestsArchiveNovelty implements Archive<TestSuiteChromosome>, Seriali
 		  private String getGoalKey(TestNoveltyFunction goal) {
 			    return goal.getTargetClass() + goal.getTargetMethod();
 			  }
+
+		  @SuppressWarnings({"rawtypes", "unchecked"})
+		@Override
+		public TestSuiteChromosome createMergedSolution(TestSuiteChromosome suite,
+				List<TestSuiteChromosome> population, List<TestSuiteChromosome> archive) {
+			// TODO Auto-generated method stub
+			 Properties.TEST_ARCHIVE = false;
+			    TestSuiteChromosome best = null;
+			    try {
+			      best = suite.clone();
+
+			      for (Entry<TestNoveltyFunction, ExecutionResult> entry : testMap.entrySet()) {
+			        if (!entry.getKey().isCoveredBy(best)) {
+			          TestChromosome chromosome = new TestChromosome();
+			          ExecutionResult copy = entry.getValue().clone();
+			          TestCase copyTest = copy.test.clone();
+			          copy.setTest(copyTest);
+			          chromosome.setTestCase(copy.test);
+			          chromosome.setLastExecutionResult(copy);
+			          best.addTest(chromosome); //should avoid re-execute the tests
+			        }
+			      }
+			      for (NoveltyFunction nf : coveredGoals.keySet()) {
+			    	  nf.getNovelty(best,population,archive);
+			      }
+			    } finally {
+			      Properties.TEST_ARCHIVE = true;
+			    }
+
+			    logger.info("Final test suite size from archive: " + best.size());
+			    return best;
+		}
 
 
 }

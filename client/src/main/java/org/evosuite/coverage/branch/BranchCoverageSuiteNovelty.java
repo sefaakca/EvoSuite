@@ -134,10 +134,10 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 	@Override
 	public double getNovelty(
 			AbstractTestSuiteChromosome<? extends ExecutableChromosome> suite) {
-		
+		LoggingUtils.getEvoLogger().info("Branch Coverage Suite Novelty GET NOVELTY TEK");
 		logger.trace("Calculating branch novelty");
 		double novelty = 0.0;
-		
+		predicateCountList.clear();
 		List<ExecutionResult> results = runTestSuite(suite);
 		
 		Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();
@@ -173,11 +173,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 					df = falseDistance.get(key);
 				}
 				
-				if(numExecuted==1)
-					novelty +=1;
-				else
-					novelty+=normalize(df) + normalize(dt);
-				
 				if (falseDistance.containsKey(key)&&(Double.compare(dt, 0.0) == 0))
 					numCoveredBranches++;
 
@@ -189,8 +184,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			
 		//}
 		
-		
-		novelty += 2 * (totalBranches - predicateCount.size());
 		// Ensure all methods are called
 		int missingMethods = 0;
 		for (String e : methods) {
@@ -435,6 +428,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			// TODO: handle exception
 		}
 		finally {
+			predicateCountList.clear();
 			Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
 			
 			Iterator<AbstractTestSuiteChromosome<? extends ExecutableChromosome>> it = population.iterator();
@@ -443,18 +437,18 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			
 			AbstractTestSuiteChromosome<? extends ExecutableChromosome> others =it.next();
 
-			List<ExecutionResult> results = runTestSuite(others);
+			populationCalculation(predicateCountList,others);
+			//List<ExecutionResult> results = runTestSuite(others);
+			List<ExecutionResult> results = runTestSuite(suite);
 			Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();
 			Map<Integer, Double> falseDistance = new HashMap<Integer, Double>();
 			Map<Integer, Integer> predicateCount = new HashMap<Integer, Integer>();
 			Map<String, Integer> callCount = new HashMap<String, Integer>();
 			
-			boolean hasTimeoutOrTestException = analyzeTraces(others, results, predicateCount, 
+			boolean hasTimeoutOrTestException = analyzeTraces(suite, results, predicateCount, 
 												callCount, trueDistance, falseDistance);
-			handleConstructorExceptions(others, results, callCount);
+			handleConstructorExceptions(suite, results, callCount);
 			
-			if(others.equals(suite))
-			{
 				currentpredicateCount= predicateCount;
 				
 				int numCoveredBranches = 0;
@@ -479,11 +473,9 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 					if (trueDistance.containsKey(key)&&(Double.compare(dt, 0.0) == 0))
 						numCoveredBranches++;
 				}
-				
 				int missingMethods = 0;
 				for (String e : methods) {
 					if (!callCount.containsKey(e)) {
-						
 						missingMethods += 1;
 					}
 				}
@@ -510,8 +502,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 
 				suite.setNumOfCoveredGoals(this, coverage);
 				suite.setNumOfNotCoveredGoals(this, totalGoals-coverage);
-			}
-			
 
 			predicateCountList.add(predicateCount);
 			
@@ -519,27 +509,27 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		
 		noveltywithArchive(predicateCountList,archive);
 		
+		//Distance Calculation
 		Collection<Integer> curvalues = currentpredicateCount.values();
 		double distance =0;
+		
 		for(int i =0 ; i<predicateCountList.size();i++)
 		{
 			Collection<Integer> othervalues = predicateCountList.get(i).values();
 			
-			Iterator<Integer> currentIterator = curvalues.iterator();
-			
-			Iterator<Integer> otherIterator = othervalues.iterator();
-			
-			if(currentIterator.hasNext() && otherIterator.hasNext())
-				distance +=Math.abs(currentIterator.next()-otherIterator.next());
-			else if(otherIterator.hasNext())
-				distance +=otherIterator.next();
 				
+				Iterator<Integer> currentIterator = curvalues.iterator();
+				Iterator<Integer> otherIterator = othervalues.iterator();
+				if(currentIterator.hasNext() && otherIterator.hasNext())
+					distance +=Math.abs(currentIterator.next()-otherIterator.next());
+				else if(otherIterator.hasNext())
+					distance +=otherIterator.next();	
 		}//end of for loop
 		
 		
-		distance = distance/population.size();
+		distance = distance/predicateCountList.size();
 		distance = normalize(distance);
-		
+		updateIndividual(this, suite, distance);
 		return distance;
 		}
 	
@@ -565,151 +555,36 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			handleConstructorExceptions(others, results, callCount);
 			
 			
-			predicateCountList.add(predicateCount);
+			predicateCountList2.add(predicateCount);
 			
 		}
 		
 	}
 	
-	/*
-	@SuppressWarnings("finally")
-	public double getNovelty(TestSuiteChromosome individual, List<TestChromosome> population,
-			List<TestChromosome> archive) {
-		// TODO Auto-generated method stub	
-		try
-		{
-			Thread.sleep(50);
-			
-		}
-		catch (Exception e) {
-			// TODO: handle exception
-		}
-		finally {
-			double noveltymetric = 0;
-			int cov=0;
-			//LoggingUtils.getEvoLogger().info("TEST SUITE NOVELTY FUNCTION");
-			List<ExecutionResult> result=runTestSuite(individual);
-			Iterator<ExecutionResult>itexec= result.iterator();
-			Map<Integer, Integer> Counter = new HashMap<Integer, Integer>();
-			while(itexec.hasNext())
-			{
-				Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
-				Map<Integer, Integer> restofthepopCount = new HashMap<Integer, Integer>();			
-				if(currentpredicateCount.containsKey(itexec.next().getTrace().getPredicateExecutionCount()))
-				currentpredicateCount.putAll(itexec.next().getTrace().getPredicateExecutionCount());	
-				Iterator<TestChromosome> popit = population.iterator();
-				Iterator<TestChromosome> archit = archive.iterator();
-				
-			
-				
-				//Predicate Counts for archive
-				while(archit.hasNext()){
-					org.evosuite.testcase.TestCase arc = archit.next().getTestCase();
-					ExecutionResult otherresult = runTest(arc);
-					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
-					if(!predicateCountList.contains(restofthepopCount))
-						predicateCountList.add(restofthepopCount);
-				}
-			
-				//Predicate Counts for rest of the pop
-				while (popit.hasNext()) {
-			
-					org.evosuite.testcase.TestCase others = popit.next().getTestCase();
-
-					ExecutionResult otherresult = runTest(others);
-			
-					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
-					if(!predicateCountList.contains(restofthepopCount))
-						predicateCountList.add(restofthepopCount);
-				}
-			
-				//predicateCountList.add(restofthepopCount);
+	private void populationCalculation(List<Map<Integer, Integer>> preCountList,AbstractTestSuiteChromosome<? extends ExecutableChromosome> others)
+	{
+		//I have to calculate test running results for Population.
+		//Iterator<AbstractTestSuiteChromosome<? extends ExecutableChromosome>> it = population.iterator();
 		
-				Collection<Integer> curvalues = currentpredicateCount.values();
-				//double noveltymetric = 0;
-				//Collection<Integer> restvalues = restofthepopCount.values();
-				
-				for(int i =0 ; i<predicateCountList.size();i++)
-				{
-					Collection<Integer> othervalues = predicateCountList.get(i).values();
-					Iterator<Integer> currentIterator = curvalues.iterator();
-					Iterator<Integer> otherIterator = othervalues.iterator();
-					if(currentIterator.hasNext() && otherIterator.hasNext())
-						noveltymetric +=Math.abs(currentIterator.next()-otherIterator.next());
-					else if(otherIterator.hasNext())
-						noveltymetric +=otherIterator.next();
-
-				}
-
-				noveltymetric = (noveltymetric/population.size());
-				noveltymetric = normalize(noveltymetric);
-				
-			}
-			individual.setCoverageNovelty(this, (double)cov/(double)totalGoals);
-			updateIndividual(this, individual, noveltymetric);
-			return noveltymetric;
-			
-			/*
-			List<ExecutionResult> result=runTestSuite(individual);
-			Iterator<ExecutionResult>itexec= result.iterator();
-			
-			if(itexec.hasNext())
-			{
-				Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
-				Map<Integer, Integer> restofthepopCount = new HashMap<Integer, Integer>();			
-				currentpredicateCount.putAll(itexec.next().getTrace().getPredicateExecutionCount());	
-				Iterator<TestChromosome> popit = population.iterator();
-				Iterator<TestChromosome> archit = archive.iterator();
-			
-				//Predicate Counts for archive
-				while(archit.hasNext()){
-					org.evosuite.testcase.TestCase arc = archit.next().getTestCase();
-					ExecutionResult otherresult = runTest(arc);
-					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
-				
-				}
-			
-				//Predicate Counts for rest of the pop
-				while (popit.hasNext()) {
-			
-					org.evosuite.testcase.TestCase others = popit.next().getTestCase();
-
-					ExecutionResult otherresult = runTest(others);
-			
-					restofthepopCount.putAll(otherresult.getTrace().getPredicateExecutionCount());
-				}
-			
-				predicateCountList.add(restofthepopCount);
+		//while (it.hasNext()) {
 		
-				Collection<Integer> curvalues = currentpredicateCount.values();
-				double distance = 0;
-				//Collection<Integer> restvalues = restofthepopCount.values();
-		
-				for(int i =0 ; i<predicateCountList.size();i++)
-				{
-					Collection<Integer> othervalues = predicateCountList.get(i).values();
-					Iterator<Integer> currentIterator = curvalues.iterator();
-					Iterator<Integer> otherIterator = othervalues.iterator();
-					if(currentIterator.hasNext() && otherIterator.hasNext())
-						distance +=Math.abs(currentIterator.next()-otherIterator.next());
-					else if(otherIterator.hasNext())
-						distance +=otherIterator.next();
-				}
+		//AbstractTestSuiteChromosome<? extends ExecutableChromosome> others =it.next();
 
-				distance = distance/population.size();
-				distance = normalize(distance);
-				updateIndividual(this, individual, distance);
-				return distance;
-			}
-		else{
-			updateIndividual(this, individual, 0);
-			return 0;
-		}
-			
-		}
+		List<ExecutionResult> results = runTestSuite(others);
+		Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();
+		Map<Integer, Double> falseDistance = new HashMap<Integer, Double>();
+		Map<Integer, Integer> predicateCount = new HashMap<Integer, Integer>();
+		Map<String, Integer> callCount = new HashMap<String, Integer>();
 		
+		boolean hasTimeoutOrTestException = analyzeTraces(others, results, predicateCount, 
+											callCount, trueDistance, falseDistance);
+		handleConstructorExceptions(others, results, callCount);
+		
+		
+		preCountList.add(predicateCount);
 
+	//	}
 	}
-	*/	
+
 }
 

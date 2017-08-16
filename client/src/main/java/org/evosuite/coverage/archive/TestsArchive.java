@@ -32,6 +32,7 @@ import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testcase.statements.reflection.PrivateFieldStatement;
 import org.evosuite.testcase.statements.reflection.PrivateMethodStatement;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 import org.evosuite.utils.generic.GenericAccessibleObject;
 import org.evosuite.utils.generic.GenericClass;
@@ -175,6 +176,7 @@ public enum TestsArchive implements Archive<TestSuiteChromosome>, Serializable {
     Properties.TEST_ARCHIVE = false;
     TestSuiteChromosome best = null;
     try {
+    	LoggingUtils.getEvoLogger().info("TEST ARCHIVE");
       best = suite.clone();
 
       for (Entry<TestFitnessFunction, ExecutionResult> entry : testMap.entrySet()) {
@@ -456,6 +458,14 @@ public enum TestsArchive implements Archive<TestSuiteChromosome>, Serializable {
   private String getGoalKey(TestFitnessFunction goal) {
     return goal.getTargetClass() + goal.getTargetMethod();
   }
+
+  @Override
+public TestSuiteChromosome createMergedSolution(TestSuiteChromosome solution, List<TestSuiteChromosome> population,
+		List<TestSuiteChromosome> archive) {
+	// TODO Auto-generated method stub
+	 // TestSuiteChromosome best = null;
+	return null;
+}
   
   
 
