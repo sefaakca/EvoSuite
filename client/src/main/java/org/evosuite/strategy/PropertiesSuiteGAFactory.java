@@ -42,8 +42,8 @@ import org.evosuite.ga.metaheuristics.RandomSearch;
 import org.evosuite.ga.metaheuristics.SPEA2;
 import org.evosuite.ga.metaheuristics.SteadyStateGA;
 import org.evosuite.ga.metaheuristics.NSGAII;
+import org.evosuite.ga.metaheuristics.NoveltySearchMono;
 import org.evosuite.ga.metaheuristics.NoveltySearch;
-import org.evosuite.ga.metaheuristics.NoveltySearch2;
 import org.evosuite.ga.metaheuristics.mosa.MOSA;
 import org.evosuite.ga.metaheuristics.OnePlusOneEA;
 import org.evosuite.ga.metaheuristics.StandardGA;
@@ -189,7 +189,22 @@ public class PropertiesSuiteGAFactory extends PropertiesSearchAlgorithmFactory<T
 			return new MOSA<TestSuiteChromosome>(factory);
 		case NOVELTY:
 			logger.info("Chosen search algorithm: NoveltySearch"); {
-			NoveltySearch2<TestSuiteChromosome> ns = new NoveltySearch2<TestSuiteChromosome>(factory);
+			NoveltySearch<TestSuiteChromosome> ns = new NoveltySearch<TestSuiteChromosome>(factory);
+			if (Properties.TEST_ARCHIVE)
+				ns.setArchive(TestsArchiveNovelty.instance);
+
+			if (Properties.REPLACEMENT_FUNCTION == TheReplacementFunction.FITNESSREPLACEMENT) {
+				// user has explicitly asked for this replacement function
+				ns.setReplacementFunction(new NoveltyReplacementFunction());
+			} else {
+				// use default
+				ns.setReplacementFunction(new NoveltyReplacementFunction());//TestSuiteReplacementFunction
+			}
+			return ns;
+		}
+		case NOVELTYMONO:
+			logger.info("Chosen search algorithm: NoveltySearch"); {
+			NoveltySearchMono<TestSuiteChromosome> ns = new NoveltySearchMono<TestSuiteChromosome>(factory);
 			if (Properties.TEST_ARCHIVE)
 				ns.setArchive(TestsArchiveNovelty.instance);
 

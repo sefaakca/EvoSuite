@@ -34,7 +34,7 @@ import org.evosuite.ga.FitnessReplacementFunction;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.ga.metaheuristics.MonotonicGA;
 import org.evosuite.ga.metaheuristics.NSGAII;
-import org.evosuite.ga.metaheuristics.NoveltySearch2;
+import org.evosuite.ga.metaheuristics.NoveltySearch;
 import org.evosuite.ga.metaheuristics.OnePlusOneEA;
 import org.evosuite.ga.metaheuristics.StandardGA;
 import org.evosuite.ga.metaheuristics.SteadyStateGA;
@@ -136,7 +136,7 @@ public class PropertiesTestGAFactory extends PropertiesSearchAlgorithmFactory<Te
         case NOVELTY:
         	logger.info("Chosen search algorithm: NoveltySearch");
 			{
-				NoveltySearch2<TestChromosome> ns = new NoveltySearch2<TestChromosome>(factory);
+				NoveltySearch<TestChromosome> ns = new NoveltySearch<TestChromosome>(factory);
 				if (Properties.REPLACEMENT_FUNCTION == TheReplacementFunction.FITNESSREPLACEMENT) {
 					// user has explicitly asked for this replacement function
 					ns.setReplacementFunction(new NoveltyReplacementFunction());

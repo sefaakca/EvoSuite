@@ -2,7 +2,6 @@ package org.evosuite.coverage.branch;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,23 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.Random;
-
 import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.archive.TestsArchiveNovelty;
-import org.evosuite.ga.Chromosome;
-import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.graphs.cfg.CFGMethodAdapter;
 import org.evosuite.testcase.ExecutableChromosome;
-import org.evosuite.testcase.TestChromosome;
-import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.TestNoveltyFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.statements.ConstructorStatement;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testsuite.AbstractTestSuiteChromosome;
-import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteNoveltyFunction;
 import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.Type;
@@ -411,23 +403,13 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		}
 	}
 
-	@SuppressWarnings("finally")
+
 	@Override
 	public double getNovelty(AbstractTestSuiteChromosome<? extends ExecutableChromosome> suite,
 				List<AbstractTestSuiteChromosome<? extends ExecutableChromosome>> population,
 				List<AbstractTestSuiteChromosome<? extends ExecutableChromosome>> archive)
 					throws ConcurrentModificationException {
-
-		
-		try
-		{
-			Thread.sleep(50);
 			
-		}
-		catch (Exception e) {
-			// TODO: handle exception
-		}
-		finally {
 			predicateCountList.clear();
 			Map<Integer, Integer> currentpredicateCount = new HashMap<Integer, Integer>();
 			
@@ -438,7 +420,7 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 			AbstractTestSuiteChromosome<? extends ExecutableChromosome> others =it.next();
 
 			populationCalculation(predicateCountList,others);
-			//List<ExecutionResult> results = runTestSuite(others);
+
 			List<ExecutionResult> results = runTestSuite(suite);
 			Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();
 			Map<Integer, Double> falseDistance = new HashMap<Integer, Double>();
@@ -530,8 +512,8 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		distance = distance/predicateCountList.size();
 		distance = normalize(distance);
 		updateIndividual(this, suite, distance);
+		
 		return distance;
-		}
 	
 	}
 
@@ -563,13 +545,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 	
 	private void populationCalculation(List<Map<Integer, Integer>> preCountList,AbstractTestSuiteChromosome<? extends ExecutableChromosome> others)
 	{
-		//I have to calculate test running results for Population.
-		//Iterator<AbstractTestSuiteChromosome<? extends ExecutableChromosome>> it = population.iterator();
-		
-		//while (it.hasNext()) {
-		
-		//AbstractTestSuiteChromosome<? extends ExecutableChromosome> others =it.next();
-
 		List<ExecutionResult> results = runTestSuite(others);
 		Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();
 		Map<Integer, Double> falseDistance = new HashMap<Integer, Double>();
@@ -582,8 +557,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 		
 		
 		preCountList.add(predicateCount);
-
-	//	}
 	}
 
 }

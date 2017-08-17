@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.evosuite.ga.localsearch.LocalSearchObjective;
 import org.evosuite.ga.metaheuristics.MonotonicGA;
-import org.evosuite.ga.metaheuristics.NoveltySearch2;
+import org.evosuite.ga.metaheuristics.NoveltySearch;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.PublicCloneable;
 import org.slf4j.Logger;

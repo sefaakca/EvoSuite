@@ -176,7 +176,6 @@ public enum TestsArchive implements Archive<TestSuiteChromosome>, Serializable {
     Properties.TEST_ARCHIVE = false;
     TestSuiteChromosome best = null;
     try {
-    	LoggingUtils.getEvoLogger().info("TEST ARCHIVE");
       best = suite.clone();
 
       for (Entry<TestFitnessFunction, ExecutionResult> entry : testMap.entrySet()) {
