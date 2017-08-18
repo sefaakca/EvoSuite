@@ -204,9 +204,7 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 
 		}
 		// archive
-		
 		updateBestIndividualFromArchiveNovelty();
-		//updateBestIndividualFromArchive();
 		notifySearchFinished();
 		
 	}
