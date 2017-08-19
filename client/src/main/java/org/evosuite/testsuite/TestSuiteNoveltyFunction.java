@@ -39,12 +39,7 @@ public abstract class TestSuiteNoveltyFunction extends
 	
 	List<Map<Integer, Integer>> predicateCountList = new ArrayList<Map<Integer, Integer>>();
 
-	@Override
-	public boolean isMaximizationFunctionNovelty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+
 	@Deprecated
 	public ExecutionResult runTest(TestCase test) {
 		ExecutionResult result = new ExecutionResult(test, null);

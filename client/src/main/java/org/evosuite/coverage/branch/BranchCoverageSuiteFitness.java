@@ -382,7 +382,7 @@ public class BranchCoverageSuiteFitness extends TestSuiteFitnessFunction {
 		//LoggingUtils.getEvoLogger().info("Branch Coverage Suite Fitness");
 		logger.trace("Calculating branch fitness");
 		double fitness = 0.0;
-
+		
 		List<ExecutionResult> results = runTestSuite(suite);
 		
 		Map<Integer, Double> trueDistance = new HashMap<Integer, Double>();

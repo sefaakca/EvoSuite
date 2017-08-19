@@ -143,9 +143,6 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 	
 	public void addNovelty(NoveltyFunction<?> nf)
 	{
-		if(nf.isMaximizationFunctionNovelty())
-			this.addNovelty(nf, 0.0, 0.0, 0);
-		else
 			this.addNovelty(nf, Double.MAX_VALUE, 0.0, 0);
 	}
 	
@@ -194,11 +191,7 @@ public abstract class Chromosome implements Comparable<Chromosome>, Serializable
 	/* End of the novelty search implementation
 	 * Author Sefa Akca
 	 */
-	
-	
-	// protected double coverage = 0.0;
 
-	// protected int numOfCoveredGoals = 0;
 
 	/** Generation in which this chromosome was created */
 	protected int age = 0;

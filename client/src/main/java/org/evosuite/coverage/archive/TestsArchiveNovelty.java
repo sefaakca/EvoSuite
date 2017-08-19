@@ -131,19 +131,13 @@ public enum TestsArchiveNovelty implements Archive<TestSuiteChromosome>, Seriali
 
 	    // Deactivate in case a test is executed and would access the archive
 	    // as this might cause a concurrent access
-	   
 		Properties.TEST_ARCHIVE = false;
 	    TestSuiteChromosome best = null;
 	    try {
 	    	//LoggingUtils.getEvoLogger().info("TEST ARCHIVE NOVELTY");
 	      best = suite.clone();
-	      LoggingUtils.getEvoLogger().info("BEST" + best.size());
-	      LoggingUtils.getEvoLogger().info("BEST" + best.getCoverageNovelty());
-			LoggingUtils.getEvoLogger().info("suite" + suite.size());
 	      for (Entry<TestNoveltyFunction, ExecutionResult> entry : testMap.entrySet()) {
-	    	  LoggingUtils.getEvoLogger().info("FOR LOOP");
 	    	  if (!entry.getKey().isCoveredBy(best)) {
-	    	  LoggingUtils.getEvoLogger().info("ADDED");
 	          TestChromosome chromosome = new TestChromosome();
 	          ExecutionResult copy = entry.getValue().clone();
 	          TestCase copyTest = copy.test.clone();

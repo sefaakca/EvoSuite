@@ -365,10 +365,7 @@ public abstract class GeneticAlgorithm<T extends Chromosome> implements SearchAl
 	private boolean isMaximizationFunction() {
 		return fitnessFunctions.get(0).isMaximizationFunction();
 	}
-	private boolean isMaximizationFunctionNovelty(){
-		return noveltyFunctions.get(0).isMaximizationFunctionNovelty();
-	}
-
+	
 	protected void updateProbability(boolean improvement){
 		if (improvement) {
 			localSearchProbability *= Properties.LOCAL_SEARCH_ADAPTATION_RATE;
@@ -1138,14 +1135,6 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 				
 			}
 		});
-		//Collections.sort(population);//,Collections.reverseOrder()
-		/*
-		if (isMaximizationFunctionNovelty()) {
-			Collections.sort(population,Collections.reverseOrder() );
-		} else {
-			Collections.sort(population);
-		}
-		*/
 	}
 
 	/**
@@ -1295,13 +1284,13 @@ public void calculateNoveltyAndSortPopulation(List<T> archive) {
 		if(archive == null)
 			return;
 		
-
 		T best = archive.createMergedSolution(getBestIndividual());
 		// The archive may contain tests evaluated with a fitness function
 		// that is not part of the optimization (e.g. ibranch secondary objective)
 		Iterator<FitnessFunction<?>> it = best.getCoverageValues().keySet().iterator();
-		
+		int counter=0;
 		while(it.hasNext()) {
+			counter++;
 			FitnessFunction<?> ff = it.next();
 			if(!fitnessFunctions.contains(ff))
 				it.remove();
@@ -1319,7 +1308,9 @@ protected void updateBestIndividualFromArchiveNovelty() {
 		// The archive may contain tests evaluated with a fitness function
 		// that is not part of the optimization (e.g. ibranch secondary objective)
 		Iterator<NoveltyFunction<?>> it = best.getCoverageValuesNovelty().keySet().iterator();
+		int counter=0;
 		while(it.hasNext()) {
+			counter++;
 			NoveltyFunction<?> nf = it.next();
 			if(!noveltyFunctions.contains(nf))
 				it.remove();
@@ -1349,12 +1340,7 @@ protected void updateBestIndividualFromArchiveNovelty() {
 	}
 	
 	protected boolean isBetterOrEqualNovelty(Chromosome chromosome1, Chromosome chromosome2) {
-		// if (fitnessFunction.isMaximizationFunction()) {
-		if (getNoveltyFunction().isMaximizationFunctionNovelty()) {
-			return chromosome1.compareToNovelty(chromosome2) <= 0;
-		} else {
 			return chromosome1.compareToNovelty(chromosome2) >= 0;
-		}
 	}
 
 	/*

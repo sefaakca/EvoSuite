@@ -126,12 +126,7 @@ public abstract class TestNoveltyFunction extends NoveltyFunction<TestChromosome
 		// TODO Auto-generated method stub
 		return TestCaseExecutor.runTest(test);
 	}
-	@Override
-	public boolean isMaximizationFunctionNovelty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+
 	
 	/*
 	@Override

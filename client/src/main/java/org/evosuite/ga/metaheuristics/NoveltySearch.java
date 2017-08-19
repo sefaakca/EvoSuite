@@ -4,21 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.evosuite.Properties;
-import org.evosuite.TimeController;
+
 import org.evosuite.ga.Chromosome;
 import org.evosuite.ga.ChromosomeFactory;
 import org.evosuite.ga.ConstructionFailedException;
-import org.evosuite.ga.NoveltyFunction;
 import org.evosuite.ga.NoveltyReplacementFunction;
 import org.evosuite.ga.ReplacementFunction;
-import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 
-	private static final long serialVersionUID = -662894538523753916L;
+	private static final long serialVersionUID = -8420573499858372370L;
+
 
 	private final Logger logger = LoggerFactory.getLogger(NoveltySearch.class);
 
@@ -33,34 +32,11 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 		setReplacementFunction(new NoveltyReplacementFunction());
 		
 	}
-	
-	protected boolean keepOffspring(Chromosome parent1, Chromosome parent2, Chromosome offspring1,
-			Chromosome offspring2) {
-		return replacementFunction.keepOffspring(parent1, parent2, offspring1, offspring2);
-	}
-	
-	private T newRandomIndividual() {
-		T randomChromosome = chromosomeFactory.getChromosome();
-		for (NoveltyFunction<?> noveltyFunction : this.noveltyFunctions) {
-			randomChromosome.addNovelty(noveltyFunction);
-		}
-		return randomChromosome;
-	}
-	
-	private double getBestNovelty() {
-		T bestIndividual = getBestIndividualNovelty();
-		for (NoveltyFunction<T> nf : noveltyFunctions) {
-			nf.getNovelty(bestIndividual,population,archive);
-		}
-		return bestIndividual.getNovelty();
-		
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void evolve() {
 		// TODO Auto-generated method stub
 		List<T> newGeneration = new ArrayList<T>();
-		// Elitism
 		logger.debug("Elitism");
 		newGeneration.addAll(elitisimForNovelty());
 		archive.addAll(elitisimForNovelty());
@@ -141,8 +117,6 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 		
 		
 	}
-	
-	private static final double DELTA = 0.000000001;
 
 	@Override
 	public void generateSolution() {
@@ -158,15 +132,11 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 		logger.debug("Starting evolution");
 		setArchive(archive);
 		int starvationCounter = 0;
-		double bestNoveltyMetric = 0;//Double.MAX_VALUE;
-		double lastbestNoveltyMetric =0;// Double.MAX_VALUE;
-		if (getNoveltyFunction().isMaximizationFunctionNovelty()) {
-			bestNoveltyMetric = Double.MAX_VALUE;
-			lastbestNoveltyMetric = Double.MAX_VALUE;
-		}
+		double bestNoveltyMetric = 0;
+		double lastbestNoveltyMetric =0;
+		
 
-		while (!isFinished()) {//!isFinished()
-			
+		while (!isFinished()) {
 			logger.info("Population size before: " + population.size());
 			// related to Properties.ENABLE_SECONDARY_OBJECTIVE_AFTER;
 			// check the budget progress and activate a secondary criterion
@@ -180,13 +150,7 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 			
 			double newNoveltyMetric = getBestIndividualNovelty().getNovelty();
 
-			if (getNoveltyFunction().isMaximizationFunctionNovelty())
-				assert(newNoveltyMetric >= (bestNoveltyMetric - DELTA)) : "best novelty metric was: " + bestNoveltyMetric
-						+ ", now best novelty metric is " + newNoveltyMetric;
-			else
-				assert(newNoveltyMetric <= (bestNoveltyMetric + DELTA)) : "best novelty metric was: " + bestNoveltyMetric
-						+ ", now best novelty metric is " + newNoveltyMetric;
-				bestNoveltyMetric = newNoveltyMetric;
+			bestNoveltyMetric = newNoveltyMetric;
 
 			if (Double.compare(bestNoveltyMetric, lastbestNoveltyMetric) == 0) {
 				starvationCounter++;
@@ -204,11 +168,11 @@ public class NoveltySearch<T extends Chromosome> extends GeneticAlgorithm<T>{
 
 		}
 		// archive
+		//updateBestIndividualFromArchive();
 		updateBestIndividualFromArchiveNovelty();
 		notifySearchFinished();
 		
 	}
-	
 	
 	public void setReplacementFunction(ReplacementFunction replacement_function) {
 		this.replacementFunction = replacement_function;

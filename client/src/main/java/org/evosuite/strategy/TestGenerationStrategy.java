@@ -195,30 +195,6 @@ public abstract class TestGenerationStrategy {
 	    for (int i = 0; i < Properties.CRITERION.length; i++) {
 	    	TestSuiteNoveltyFunction newFunction = NoveltyFunctions.getNoveltyFunction(Properties.CRITERION[i]);
 	    	
-	    	// If this is compositional fitness, we need to make sure
-	    	// that all functions are consistently minimization or 
-	    	// maximization functions
-	    	if(Properties.ALGORITHM != Algorithm.NSGAII && Properties.ALGORITHM != Algorithm.SPEA2) {
-	    		for(TestSuiteNoveltyFunction oldFunction : nfs) {			
-	    			if(oldFunction.isMaximizationFunctionNovelty() != newFunction.isMaximizationFunctionNovelty()) {
-	    				StringBuffer sb = new StringBuffer();
-	    				sb.append("* Invalid combination of novelty functions: ");
-	    				sb.append(oldFunction.toString());
-	    				if(oldFunction.isMaximizationFunctionNovelty())
-	    					sb.append(" is a maximization function ");
-	    				else
-	    					sb.append(" is a minimization function ");
-	    				sb.append(" but ");
-	    				sb.append(newFunction.toString());
-	    				if(newFunction.isMaximizationFunctionNovelty())
-	    					sb.append(" is a maximization function ");
-	    				else
-	    					sb.append(" is a minimization function ");
-	    				LoggingUtils.getEvoLogger().info(sb.toString());
-	    				throw new RuntimeException("Invalid combination of novelty functions");
-	    			}
-	    		}
-	    	}
 	    	nfs.add(newFunction);
 
 	    }

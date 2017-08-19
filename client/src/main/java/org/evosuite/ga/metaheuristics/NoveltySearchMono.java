@@ -1,22 +1,14 @@
 package org.evosuite.ga.metaheuristics;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
 import org.evosuite.Properties;
-import org.evosuite.TimeController;
-import org.evosuite.coverage.archive.TestsArchiveNovelty;
 import org.evosuite.ga.Chromosome;
 import org.evosuite.ga.ChromosomeFactory;
 import org.evosuite.ga.ConstructionFailedException;
-import org.evosuite.ga.FitnessFunction;
-import org.evosuite.ga.FitnessReplacementFunction;
 import org.evosuite.ga.NoveltyFunction;
 import org.evosuite.ga.NoveltyReplacementFunction;
 import org.evosuite.ga.ReplacementFunction;
-import org.evosuite.testcase.TestChromosome;
-import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,12 +63,12 @@ public class NoveltySearchMono<T extends Chromosome> extends GeneticAlgorithm<T>
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void evolve() {
 		// TODO Auto-generated method stub
 		List<T> newGeneration = new ArrayList<T>();
 		
-		// Elitism
 		logger.debug("Elitism");
 		newGeneration.addAll(elitisimForNovelty());
 		archive.addAll(elitisimForNovelty());
@@ -218,11 +210,7 @@ public class NoveltySearchMono<T extends Chromosome> extends GeneticAlgorithm<T>
 		int starvationCounter = 0;
 		double bestNoveltyMetric = Double.MAX_VALUE;
 		double lastbestNoveltyMetric = Double.MAX_VALUE;
-		if (getNoveltyFunction().isMaximizationFunctionNovelty()) {
-			bestNoveltyMetric = 0.0;
-			lastbestNoveltyMetric = 0.0;
-		}
-
+		
 		while (!isFinished()) {//
 			logger.info("Population size before: " + population.size());
 			// related to Properties.ENABLE_SECONDARY_OBJECTIVE_AFTER;
@@ -230,44 +218,18 @@ public class NoveltySearchMono<T extends Chromosome> extends GeneticAlgorithm<T>
 			// according to the property value.
 
 			{
-				double bestNoveltyBeforeEvolution = getBestNovelty();
 				evolve();
 				sortPopulationNovelty();
-				double bestNoveltyAfterEvolution = getBestNovelty();
 
-				if (getNoveltyFunction().isMaximizationFunctionNovelty())
-					assert(bestNoveltyAfterEvolution >= (bestNoveltyBeforeEvolution
-							- DELTA)) : "best novelty metric before evolve()/sortPopulation() was: " + bestNoveltyBeforeEvolution
-									+ ", now best novelty metric is " + bestNoveltyAfterEvolution;
-				else
-					assert(bestNoveltyAfterEvolution <= (bestNoveltyBeforeEvolution
-							+ DELTA)) : "best novelty metric before evolve()/sortPopulation() was: " + bestNoveltyBeforeEvolution
-									+ ", now best novelty metric is " + bestNoveltyAfterEvolution;
+				
 			}
 			
-			{
-				double bestNoveltyBeforeLocalSearch = getBestNovelty();
+			{		
 				applyLocalSearchNovelty();
-				double bestNoveltyAfterLocalSearch = getBestNovelty();
-
-				if (getNoveltyFunction().isMaximizationFunctionNovelty())
-					assert(bestNoveltyAfterLocalSearch >= (bestNoveltyBeforeLocalSearch
-							- DELTA)) : "best novelty metric before applyLocalSearch() was: " + bestNoveltyBeforeLocalSearch
-									+ ", now best novelty metric is " + bestNoveltyAfterLocalSearch;
-				else
-					assert(bestNoveltyAfterLocalSearch <= (bestNoveltyBeforeLocalSearch
-							+ DELTA)) : "best novelty metric before applyLocalSearch() was: " + bestNoveltyBeforeLocalSearch
-									+ ", now best novelty metric is " + bestNoveltyAfterLocalSearch;
 			}
 			double newNoveltyMetric = getBestNovelty();
 
-			if (getNoveltyFunction().isMaximizationFunctionNovelty())
-				assert(newNoveltyMetric >= (bestNoveltyMetric - DELTA)) : "best novelty metric was: " + bestNoveltyMetric
-						+ ", now best novelty metric is " + newNoveltyMetric;
-			else
-				assert(newNoveltyMetric <= (bestNoveltyMetric + DELTA)) : "best novelty metric was: " + bestNoveltyMetric
-						+ ", now best novelty metric is " + newNoveltyMetric;
-				bestNoveltyMetric = newNoveltyMetric;
+			bestNoveltyMetric = newNoveltyMetric;
 
 			if (Double.compare(bestNoveltyMetric, lastbestNoveltyMetric) == 0) {
 				starvationCounter++;
@@ -289,8 +251,7 @@ public class NoveltySearchMono<T extends Chromosome> extends GeneticAlgorithm<T>
 
 		}
 		// archive
-		//TimeController.execute(this::updateBestIndividualFromArchiveNovelty, "update from archive", 5_000);
-
+		//updateBestIndividualFromArchive();
 		updateBestIndividualFromArchiveNovelty();
 		notifySearchFinished();
 		

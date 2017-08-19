@@ -55,14 +55,7 @@ public abstract class NoveltyFunction<T extends Chromosome> implements Serializa
 		return value / (1.0 + value);
 		
 	}
-	
-	/**
-	 * Do we need to maximize, or minimize this function?
-	 * 
-	 * @return a boolean.
-	 */
-	public abstract boolean isMaximizationFunctionNovelty();
-	
+
 	public boolean updateCoveredGoals(){
 		return false;
 	}

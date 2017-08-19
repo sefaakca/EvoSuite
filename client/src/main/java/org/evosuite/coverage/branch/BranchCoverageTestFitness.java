@@ -32,6 +32,7 @@ import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.execution.ExecutionTrace;
 import org.evosuite.testcase.execution.ExecutionTraceImpl.BranchEval;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.testcase.execution.MethodCall;
 
 /**
@@ -165,7 +166,6 @@ public class BranchCoverageTestFitness extends TestFitnessFunction {
 	@Override
 	public double getFitness(TestChromosome individual, ExecutionResult result) {
 		ControlFlowDistance distance = goal.getDistance(result);
-		
 		double fitness = distance.getResultingBranchFitness();
 		
 		if(logger.isDebugEnabled()) {

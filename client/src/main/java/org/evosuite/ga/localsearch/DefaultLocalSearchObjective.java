@@ -82,16 +82,6 @@ public class DefaultLocalSearchObjective<T extends Chromosome> implements LocalS
 	
 	@Override
 	public void addNoveltyFunction(NoveltyFunction<? extends Chromosome> novelty){
-		for(NoveltyFunction<? extends Chromosome> ff : noveltyFunctions) {
-			if(ff.isMaximizationFunctionNovelty() != novelty.isMaximizationFunctionNovelty()) {
-				throw new RuntimeException("Local search only supports composition of multiple criteria");
-			}
-		}
-		if(novelty.isMaximizationFunctionNovelty())
-			isMaximization = true;
-		else
-			isMaximization = false;
-
 		noveltyFunctions.add(novelty);
 	}
 	

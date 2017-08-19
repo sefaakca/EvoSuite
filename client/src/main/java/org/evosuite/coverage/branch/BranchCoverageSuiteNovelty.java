@@ -126,7 +126,6 @@ public class BranchCoverageSuiteNovelty extends TestSuiteNoveltyFunction {
 	@Override
 	public double getNovelty(
 			AbstractTestSuiteChromosome<? extends ExecutableChromosome> suite) {
-		LoggingUtils.getEvoLogger().info("Branch Coverage Suite Novelty GET NOVELTY TEK");
 		logger.trace("Calculating branch novelty");
 		double novelty = 0.0;
 		predicateCountList.clear();
