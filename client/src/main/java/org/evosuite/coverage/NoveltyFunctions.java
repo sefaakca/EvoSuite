@@ -79,9 +79,6 @@ public class NoveltyFunctions {
 		case BRANCH:
 			return new BranchCoverageFactoryNovelty();
 		
-		case ONLYBRANCH:
-			return new BranchCoverageFactoryNovelty();
-		
 		default:
 			logger.warn("No TestFitnessFactory defined for " + crit
 			        + " using default one (BranchCoverageFactory)");
